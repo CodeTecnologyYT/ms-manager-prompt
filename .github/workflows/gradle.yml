@@ -69,6 +69,13 @@ jobs:
           gcloud config list project
           echo "✅ Autenticación correcta 🎉"
 
+      - name: Prepare remote directory
+        run: |
+          echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
+          gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
+            --zone=${{secrets.GCLOUD_ZONE}} \
+            --command="mkdir -p /home/${{ secrets.GCLOUD_USERNAME }}/app"
+
       - name: Upload JAR to VM
         run: |
           echo "📦 Enviando JAR a la VM..."
