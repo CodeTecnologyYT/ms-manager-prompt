@@ -116,6 +116,6 @@ jobs:
             export SMTP_PORT=${{ secrets.SMTP_PORT }} && 
             export SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} && 
             export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} && 
-            export FIREBASE_SERVICE_ACCOUNT_JSON='${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' && 
+            export FIREBASE_SERVICE_ACCOUNT_JSON='$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d) && 
             java -jar /home/${{secrets.GCLOUD_USERNAME}}/app/app.jar &"
           echo "✅ Despliegue finalizado correctamente 🚀"
