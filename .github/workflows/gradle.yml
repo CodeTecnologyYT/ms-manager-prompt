@@ -106,5 +106,16 @@ jobs:
           echo "🔄 Reiniciando aplicación en la VM..."
           gcloud compute ssh ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}} \
             --zone=${{secrets.GCLOUD_ZONE}} \
-            --command="sudo systemctl restart app || java -jar /home/${{secrets.GCLOUD_USERNAME}}/app/app.jar &"
+            --command="
+            export DB_HOST=${{ secrets.DB_HOST }} && 
+            export DB_PORT=${{ secrets.DB_PORT }} && 
+            export DB_USERNAME=${{ secrets.DB_USERNAME }} && 
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }} && 
+            export DB_DATABASE=${{ secrets.DB_DATABASE }} && 
+            export SMTP_HOST=${{ secrets.SMTP_HOST }} && 
+            export SMTP_PORT=${{ secrets.SMTP_PORT }} && 
+            export SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} && 
+            export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} && 
+            export FIREBASE_SERVICE_ACCOUNT_JSON='${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' && 
+            java -jar /home/${{secrets.GCLOUD_USERNAME}}/app/app.jar &"
           echo "✅ Despliegue finalizado correctamente 🚀"
