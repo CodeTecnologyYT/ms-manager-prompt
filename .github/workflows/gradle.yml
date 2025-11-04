@@ -58,7 +58,6 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
           project_id: '${{ secrets.GCLOUD_PROJECT_ID }}'
-      
 
       - name: Verify gcloud connection
         run: |
