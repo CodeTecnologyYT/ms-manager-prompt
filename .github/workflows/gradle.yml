@@ -108,19 +108,29 @@ jobs:
             --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
-            pkill -f 'java -jar' || true && 
-            echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json &&
-            export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/service-account.json && 
-            export DB_HOST=${{ secrets.DB_HOST }} && 
-            export DB_PORT=${{ secrets.DB_PORT }} && 
-            export DB_USERNAME=${{ secrets.DB_USERNAME }} && 
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }} && 
-            export DB_DATABASE=${{ secrets.DB_DATABASE }} && 
-            export SMTP_HOST=${{ secrets.SMTP_HOST }} && 
-            export SMTP_PORT=${{ secrets.SMTP_PORT }} && 
-            export SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} && 
-            export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} && 
-            export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d) &&
-            cd /home/${{secrets.GCLOUD_USERNAME}}/app &&
-            nohup java -jar app.jar > app.log 2>&1 &"
+              # 🧹 Detener instancia anterior si existe
+              pkill -f 'java -jar' || true
+      
+              # 🧩 Crear credenciales si la VM no tiene service account propia
+              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json
+              export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/service-account.json
+      
+              # ⚙️ Variables de entorno de la app
+              export DB_HOST='${{ secrets.DB_HOST }}'
+              export DB_PORT='${{ secrets.DB_PORT }}'
+              export DB_USERNAME='${{ secrets.DB_USERNAME }}'
+              export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+              export DB_DATABASE='${{ secrets.DB_DATABASE }}'
+              export SMTP_HOST='${{ secrets.SMTP_HOST }}'
+              export SMTP_PORT='${{ secrets.SMTP_PORT }}'
+              export SMTP_USERNAME='${{ secrets.SMTP_USERNAME }}'
+              export SMTP_PASSWORD='${{ secrets.SMTP_PASSWORD }}'
+              export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d)
+      
+              # 📂 Ir a la carpeta y lanzar app
+              cd /home/${{secrets.GCLOUD_USERNAME}}/app
+              nohup java -jar app.jar > app.log 2>&1 &
+      
+              echo '✅ App iniciada correctamente en background'
+            "
           echo "✅ Despliegue finalizado correctamente 🚀"
