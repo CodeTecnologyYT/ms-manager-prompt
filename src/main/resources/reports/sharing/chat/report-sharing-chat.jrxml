@@ -1,0 +1,77 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="report-sharing-chat" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4aa4982d-cce7-41ab-93ee-40eb0ba54aca">
+	<style name="Align"/>
+	<query language="sql"><![CDATA[]]></query>
+	<field name="role" class="java.lang.String"/>
+	<field name="content" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="19" splitType="Stretch">
+		<element kind="staticText" uuid="c2449293-5ae3-4326-9103-de48c74c383c" stretchType="ContainerHeight" x="152" y="0" width="260" height="19" fontName="Open Sans" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Kaust Document]]></text>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+	</title>
+	<pageHeader height="69" splitType="Stretch">
+		<element kind="rectangle" uuid="d9fcf7d5-e653-4875-8e4f-16b40e085341" x="20" y="5" width="80" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="e31f6f1d-90c3-4363-9cd2-0c228b4abff4" x="100" y="5" width="445" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="693a8513-a769-4d86-8207-caaf0f99cba2" x="20" y="35" width="80" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="9121dde3-5a4e-4a98-86c5-36bea0780f34" x="100" y="35" width="445" height="30" forecolor="#0C0C0C"/>
+		<element kind="staticText" uuid="deed3f99-381e-45f0-a8b9-f3b5b662cf86" x="25" y="40" width="70" height="20" fontName="Open Sans" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Collaborator]]></text>
+		</element>
+		<element kind="staticText" uuid="82534b79-86fe-4206-aa9e-c256ecb7ad3c" x="110" y="40" width="434" height="20" fontName="Open Sans" vTextAlign="Middle">
+			<text><![CDATA[Model Kaust Model]]></text>
+		</element>
+		<element kind="staticText" uuid="9ba2db65-f4bc-4c57-992f-31a31ccdcdcb" x="25" y="10" width="70" height="20" fontName="Open Sans" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Title]]></text>
+		</element>
+		<element kind="staticText" uuid="eb800b61-1a0e-4e85-a6ce-c20430cb9e81" x="110" y="10" width="434" height="20" fontName="Open Sans" vTextAlign="Middle">
+			<text><![CDATA[Discover or Investigation about to LLMs]]></text>
+		</element>
+	</pageHeader>
+	<columnHeader height="58" splitType="Stretch">
+		<element kind="staticText" uuid="f3a25b8f-b03f-42b3-b6da-799c352bee3a" x="197" y="10" width="170" height="20" forecolor="#213359" fontName="Open Sans" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[INTERACTION WITH MODEL]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="88" splitType="Immediate">
+			<element kind="textField" uuid="9b5247e8-14fc-4875-b5de-0c804e24aac9" stretchType="ContainerHeight" x="20" y="50" width="524" height="20" forecolor="#0C0C0C" markup="none" fontName="Open Sans" removeLineWhenBlank="true" hTextAlign="Right" vTextAlign="Middle">
+				<printWhenExpression><![CDATA[$F{role} != null && "ASSISTANT".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
+				<expression><![CDATA[$F{content}]]></expression>
+				<property name="com.jaspersoft.studio.element.name" value="ChatUser"/>
+			</element>
+			<element kind="rectangle" uuid="9edee7a8-36db-40bd-b387-a5923207b98d" stretchType="ElementGroupHeight" mode="Transparent" x="20" y="76" width="524" height="0" forecolor="#949494" backcolor="#030303">
+				<pen lineWidth="0.5"/>
+			</element>
+			<element kind="frame" uuid="3cb93638-9085-42ed-b500-d5c8ae5bed70" x="20" y="0" width="120" height="20">
+				<printWhenExpression><![CDATA[$F{role} != null && "USER".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
+				<element kind="staticText" uuid="a00a887a-3171-49f2-8254-adf4c0f0785b" x="0" y="0" width="30" height="20" forecolor="#0C0C0C" fontName="Open Sans" bold="true" italic="true" vTextAlign="Middle">
+					<text><![CDATA[Role:]]></text>
+				</element>
+				<element kind="textField" uuid="b8892de9-0707-4480-8754-0b54005f1fa1" x="30" y="0" width="90" height="20" fontName="Open Sans" bold="true" italic="true" vTextAlign="Middle">
+					<expression><![CDATA[$F{role}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="49a77415-b1b3-4d5a-9a57-d429020b5faf"/>
+				</element>
+			</element>
+			<element kind="frame" uuid="ca5f4da3-86d4-4005-a5eb-82931dacd310" x="464" y="0" width="80" height="20">
+				<printWhenExpression><![CDATA[$F{role} != null && "ASSISTANT".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
+				<element kind="staticText" uuid="6e6f44bc-b6c3-4545-bb5b-a1872ca17fa3" x="0" y="0" width="30" height="20" forecolor="#0C0C0C" fontName="Open Sans" bold="true" italic="true" vTextAlign="Middle">
+					<text><![CDATA[Role:]]></text>
+				</element>
+				<element kind="textField" uuid="5f06266a-14de-40be-a0b9-0ca9fc50a8be" x="30" y="0" width="50" height="20" fontName="Open Sans" bold="true" italic="true" vTextAlign="Middle">
+					<expression><![CDATA[$F{role}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="49a77415-b1b3-4d5a-9a57-d429020b5faf"/>
+				</element>
+			</element>
+			<element kind="textField" uuid="3f2446d5-818b-48b3-a538-a0144b9d3c58" stretchType="ContainerHeight" x="20" y="27" width="524" height="20" forecolor="#0C0C0C" markup="none" fontName="Open Sans" removeLineWhenBlank="true" vTextAlign="Middle">
+				<printWhenExpression><![CDATA[$F{role} != null && "USER".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
+				<expression><![CDATA[$F{content}]]></expression>
+				<property name="com.jaspersoft.studio.element.name" value="ChatUser"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>
