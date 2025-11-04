@@ -108,7 +108,7 @@ jobs:
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
             pkill -f 'java -jar' || true && 
-            echo '${{ secrets.GCLOUD_SERVICE_KEY }}' > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json && 
+            echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json &&
             export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/service-account.json && 
             export DB_HOST=${{ secrets.DB_HOST }} && 
             export DB_PORT=${{ secrets.DB_PORT }} && 
