@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup gcloud CLI
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCLOUD_SERVICE_KEY }}
@@ -104,15 +104,15 @@ jobs:
       - name: Restart Spring Boot service
         run: |
           echo "🔄 Reiniciando aplicación en la VM..."
-          gcloud compute ssh ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}} \
+           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
               # 🧹 Detener instancia anterior si existe
               pkill -f 'java -jar' || true
       
               # 🧩 Crear credenciales si la VM no tiene service account propia
-              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json
-              export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/service-account.json
+              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
+              export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
       
               # ⚙️ Variables de entorno de la app
               export DB_HOST='${{ secrets.DB_HOST }}'
