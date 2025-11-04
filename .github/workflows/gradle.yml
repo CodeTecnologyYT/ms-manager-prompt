@@ -1,0 +1,97 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Deploy JAR to Google VM
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 🧱 Job 1: Build the JAR
+  build:
+    name: 🧱 Build JAR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Spring Boot JAR
+        run: |
+          echo "🏗️ Compilando aplicación..."
+          ./gradlew clean bootJar -x test
+          echo "✅ JAR generado correctamente"
+      
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+  # ☁️ Job 2: Upload the JAR to Google VM
+  upload:
+    name: ☁️ Upload JAR to VM
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+          project_id: ${{secrets.GCLOUD_PROJECT_ID}}
+          export_default_credentials: true
+
+      - name: Verify gcloud connection
+        run: |
+          echo "🔍 Verificando conexión con Google Cloud..."
+          gcloud auth list
+          gcloud config list project
+          echo "✅ Autenticación correcta 🎉"
+
+      - name: Upload JAR to VM
+        run: |
+          echo "📦 Enviando JAR a la VM..."
+          gcloud compute scp *.jar ${secret.GCLOUD_USERNAME}@${secret.GCLOUD_INSTANCIA}:/home/${secret.GCLOUD_USERNAME}/app/app.jar \
+            --zone=us-central1-a \
+            --project=tu-proyecto
+          echo "✅ JAR enviado con éxito 🎯"
+
+  # 🔄 Job 3: Restart the app
+  restart:
+    name: 🔄 Restart app on VM
+    needs: upload
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+          project_id: tu-proyecto
+          export_default_credentials: true
+
+      - name: Restart Spring Boot service
+        run: |
+          echo "🔄 Reiniciando aplicación en la VM..."
+          gcloud compute ssh ${secret.GLOBAL_USERNAME}@${secret.GCLOUD_INSTANCIA} \
+            --zone=us-central1-a \
+            --command="sudo systemctl restart app || java -jar /home/${secret.GLOBAL_USERNAME}/app/app.jar &"
+          echo "✅ Despliegue finalizado correctamente 🚀"
