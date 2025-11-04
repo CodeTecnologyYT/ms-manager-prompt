@@ -107,6 +107,9 @@ jobs:
           gcloud compute ssh ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}} \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
+            pkill -f 'java -jar' || true && 
+            echo '${{ secrets.GCLOUD_SERVICE_KEY }}' > /home/${{ secrets.GCLOUD_USERNAME }}/service-account.json && 
+            export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/service-account.json && 
             export DB_HOST=${{ secrets.DB_HOST }} && 
             export DB_PORT=${{ secrets.DB_PORT }} && 
             export DB_USERNAME=${{ secrets.DB_USERNAME }} && 
@@ -116,6 +119,7 @@ jobs:
             export SMTP_PORT=${{ secrets.SMTP_PORT }} && 
             export SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} && 
             export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} && 
-            export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d) && 
-            java -jar /home/${{secrets.GCLOUD_USERNAME}}/app/app.jar &"
+            export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d) &&
+            cd /home/${{secrets.GCLOUD_USERNAME}}/app &&
+            nohup java -jar app.jar > /dev/null 2>&1 &"
           echo "✅ Despliegue finalizado correctamente 🚀"
