@@ -105,7 +105,6 @@ jobs:
         run: |
           echo "🔄 Reiniciando aplicación en la VM..."
           gcloud compute ssh ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}} \
-            --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
               # 🧹 Detener instancia anterior si existe
