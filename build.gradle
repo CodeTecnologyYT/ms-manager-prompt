@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'io.projectreactor:reactor-test'
     compileOnly 'org.projectlombok:lombok'
+    implementation 'com.google.cloud:google-cloud-logging-logback:0.132.18-alpha'
     implementation 'net.sf.jasperreports:jasperreports-pdf:7.0.3'
     implementation 'org.mapstruct:mapstruct:1.6.3'
     implementation 'com.google.firebase:firebase-admin:9.7.0'
