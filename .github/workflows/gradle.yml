@@ -73,7 +73,7 @@ jobs:
         run: |
           echo "📦 Enviando JAR a la VM..."
           gcloud compute scp *.jar ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}}:/home/${{secrets.GCLOUD_USERNAME}}/app/app.jar \
-            --zone=us-central1-a \
+            --zone=${{secrets.GCLOUD_ZONE}} \
             --project=${{secrets.GCLOUD_PROJECT_ID}}
           echo "✅ JAR enviado con éxito 🎯"
 
