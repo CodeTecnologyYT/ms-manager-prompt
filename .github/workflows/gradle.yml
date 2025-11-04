@@ -121,5 +121,5 @@ jobs:
             export SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} && 
             export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d) &&
             cd /home/${{secrets.GCLOUD_USERNAME}}/app &&
-            nohup java -jar app.jar > /dev/null 2>&1 &"
+            nohup java -jar app.jar > app.log 2>&1 &"
           echo "✅ Despliegue finalizado correctamente 🚀"
