@@ -52,12 +52,17 @@ jobs:
         with:
           name: app-jar
 
+      # 1️⃣ Autenticación segura con cuenta de servicio
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCLOUD_SERVICE_KEY }}
+      
+      # 2️⃣ Instalación del SDK gcloud
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
         with:
-          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-          project_id: ${{secrets.GCLOUD_PROJECT_ID}}
-          export_default_credentials: true
+          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
 
       - name: Verify gcloud connection
         run: |
