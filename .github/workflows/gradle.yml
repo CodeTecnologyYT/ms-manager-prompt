@@ -74,7 +74,7 @@ jobs:
       - name: Upload JAR to VM
         run: |
           echo "📦 Enviando JAR a la VM..."
-          gcloud compute scp *.jar ${secrets.GCLOUD_USERNAME}@${secrets.GCLOUD_INSTANCIA}:/home/${secrets.GCLOUD_USERNAME}/app/app.jar \
+          gcloud compute scp *.jar ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}}:/home/${{secrets.GCLOUD_USERNAME}}/app/app.jar \
             --zone=us-central1-a \
             --project=${{secrets.GCLOUD_PROJECT_ID}}
           echo "✅ JAR enviado con éxito 🎯"
@@ -96,7 +96,7 @@ jobs:
       - name: Restart Spring Boot service
         run: |
           echo "🔄 Reiniciando aplicación en la VM..."
-          gcloud compute ssh ${secrets.GCLOUD_USERNAME}@${secrets.GCLOUD_INSTANCIA} \
+          gcloud compute ssh ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}} \
             --zone=us-central1-a \
-            --command="sudo systemctl restart app || java -jar /home/${secrets.GCLOUD_USERNAME}/app/app.jar &"
+            --command="sudo systemctl restart app || java -jar /home/${{secrets.GCLOUD_USERNAME}}/app/app.jar &"
           echo "✅ Despliegue finalizado correctamente 🚀"
