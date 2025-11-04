@@ -57,12 +57,8 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCLOUD_SERVICE_KEY }}
-      
-      # 2️⃣ Instalación del SDK gcloud
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
           project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+      
 
       - name: Verify gcloud connection
         run: |
