@@ -94,11 +94,8 @@ jobs:
               cd /home/${{secrets.GCLOUD_USERNAME}}/app
 
               echo '🛑 Deteniendo aplicación anterior si existe...'
-              if [ -f app.pid ]; then
-                kill \$(cat app.pid) || true
-                rm app.pid
-              fi
-
+              kill -9 $(lsof -t -i:8080 -sTCP:LISTEN)
+              
               echo '⚙️ Configurando variables de entorno...'
               echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > service-account.json
               export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
@@ -112,6 +109,7 @@ jobs:
               export SMTP_PORT='${{ secrets.SMTP_PORT }}'
               export SMTP_USERNAME='${{ secrets.SMTP_USERNAME }}'
               export SMTP_PASSWORD='${{ secrets.SMTP_PASSWORD }}'
+              export AI_OPENAI='${{ secrets.AI_OPENAI }}'
               export FIREBASE_SERVICE_ACCOUNT_JSON=\$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d)
 
               echo '🚀 Iniciando aplicación...'
