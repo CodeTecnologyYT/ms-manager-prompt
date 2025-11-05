@@ -84,15 +84,6 @@ jobs:
             --project=${{secrets.GCLOUD_PROJECT_ID}}
           echo "✅ JAR enviado con éxito 🎯"
 
-      - name: Stop running service
-        run: |
-          echo "🧹 Deteniendo aplicación anterior..."
-          sleep 15
-          gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
-            --quiet \
-            --zone=${{secrets.GCLOUD_ZONE}} \
-            --command="sudo pkill -f 'java -jar' || true"
-
       - name: Configure environment and restart app
         run: |
           echo "🚀 Iniciando aplicación en background..."
@@ -100,9 +91,18 @@ jobs:
             --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="
-              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > /home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
+              cd /home/${{secrets.GCLOUD_USERNAME}}/app
+
+              echo '🛑 Deteniendo aplicación anterior si existe...'
+              if [ -f app.pid ]; then
+                kill \$(cat app.pid) || true
+                rm app.pid
+              fi
+
+              echo '⚙️ Configurando variables de entorno...'
+              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > service-account.json
               export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
-          
+
               export DB_HOST='${{ secrets.DB_HOST }}'
               export DB_PORT='${{ secrets.DB_PORT }}'
               export DB_USERNAME='${{ secrets.DB_USERNAME }}'
@@ -112,10 +112,11 @@ jobs:
               export SMTP_PORT='${{ secrets.SMTP_PORT }}'
               export SMTP_USERNAME='${{ secrets.SMTP_USERNAME }}'
               export SMTP_PASSWORD='${{ secrets.SMTP_PASSWORD }}'
-              export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d)
-          
-              cd /home/${{secrets.GCLOUD_USERNAME}}/app
-              nohup java -jar app.jar > app.log 2>&1 &
-              echo '✅ App iniciada correctamente en background'
+              export FIREBASE_SERVICE_ACCOUNT_JSON=\$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d)
+
+              echo '🚀 Iniciando aplicación...'
+              nohup java -jar app.jar > app.log 2>&1 & echo \$! > app.pid
+
+              echo '✅ Aplicación levantada correctamente con PID:' \$(cat app.pid)
             "
-          echo "✅ Despliegue finalizado correctamente 🚀"
+          echo "✅ Despliegue completado con PID controlado 🎯"
