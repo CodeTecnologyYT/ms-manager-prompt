@@ -69,20 +69,9 @@ jobs:
           gcloud config list project
           echo "✅ Autenticación correcta 🎉"
 
-      - name: Prepare SSH key reuse
-        run: |
-          mkdir -p ~/.ssh
-          if [ ! -f ~/.ssh/google_compute_engine ]; then
-          echo "🔐 Generando llave SSH inicial..."
-          ssh-keygen -t rsa -f ~/.ssh/google_compute_engine -N ""
-          fi
-          chmod 600 ~/.ssh/google_compute_engine
-          chmod 644 ~/.ssh/google_compute_engine.pub
-
       - name: Prepare remote directory
         run: |
           echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
-          sleep 20
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="mkdir -p /home/${{ secrets.GCLOUD_USERNAME }}/app"
@@ -102,7 +91,7 @@ jobs:
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
-            --command="pkill -f 'java -jar' || true"
+            --command="mkdir -p /home/${{ secrets.GCLOUD_USERNAME }}/app"
 
       - name: Configure environment and restart app
         run: |
