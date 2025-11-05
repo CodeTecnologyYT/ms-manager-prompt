@@ -101,14 +101,18 @@ jobs:
         with:
           project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
 
+      - name: Verify gcloud connection
+        run: |
+          echo "🔍 Verificando conexión con Google Cloud..."
+          gcloud auth list
+          gcloud config list project
+          echo "✅ Autenticación correcta 🎉"
+
       - name: Stop service
         run: |
           echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
-          sleep 20
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
-            --project=${{secrets.GCLOUD_PROJECT_ID}} \
-            --quiet \
             --command="pkill -f 'java -jar' || true"
           echo "✅ Despliegue finalizado correctamente 🚀"
       - name: Stop service
