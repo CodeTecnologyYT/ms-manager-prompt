@@ -95,43 +95,6 @@ jobs:
             --project=${{secrets.GCLOUD_PROJECT_ID}}
           echo "✅ JAR enviado con éxito 🎯"
 
-  # 🔄 Job 3: Restart the app
-  restart:
-    name: 🔄 Restart app on VM
-    needs: upload
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCLOUD_SERVICE_KEY }}
-
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-
-      - name: Verify gcloud connection
-        run: |
-          echo "🔍 Verificando conexión con Google Cloud..."
-          gcloud auth list
-          gcloud config list project
-          echo "✅ Autenticación correcta 🎉"
-
-      - name: Prepare SSH key reuse (Solución 1)
-        run: |
-          mkdir -p ~/.ssh
-          if [ ! -f ~/.ssh/google_compute_engine ]; then
-          echo "🔐 Generando llave SSH inicial..."
-          ssh-keygen -t rsa -f ~/.ssh/google_compute_engine -N ""
-          fi
-          chmod 600 ~/.ssh/google_compute_engine
-          chmod 644 ~/.ssh/google_compute_engine.pub
-
-      - name: Wait for key propagation
-        run: sleep 25
-
       - name: Stop running service
         run: |
           echo "🧹 Deteniendo aplicación anterior..."
