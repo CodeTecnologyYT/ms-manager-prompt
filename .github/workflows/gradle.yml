@@ -72,8 +72,10 @@ jobs:
       - name: Prepare SSH key reuse
         run: |
           mkdir -p ~/.ssh
-          touch ~/.ssh/google_compute_engine
-          touch ~/.ssh/google_compute_engine.pub
+          if [ ! -f ~/.ssh/google_compute_engine ]; then
+          echo "🔐 Generando llave SSH inicial..."
+          ssh-keygen -t rsa -f ~/.ssh/google_compute_engine -N ""
+          fi
           chmod 600 ~/.ssh/google_compute_engine
           chmod 644 ~/.ssh/google_compute_engine.pub
 
@@ -120,8 +122,10 @@ jobs:
       - name: Prepare SSH key reuse (Solución 1)
         run: |
           mkdir -p ~/.ssh
-          touch ~/.ssh/google_compute_engine
-          touch ~/.ssh/google_compute_engine.pub
+          if [ ! -f ~/.ssh/google_compute_engine ]; then
+          echo "🔐 Generando llave SSH inicial..."
+          ssh-keygen -t rsa -f ~/.ssh/google_compute_engine -N ""
+          fi
           chmod 600 ~/.ssh/google_compute_engine
           chmod 644 ~/.ssh/google_compute_engine.pub
 
