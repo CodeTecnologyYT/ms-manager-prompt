@@ -114,7 +114,6 @@ jobs:
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --command="pkill -f 'java -jar' || true"
-          echo "✅ Despliegue finalizado correctamente 🚀"
       - name: Stop service
         run: |
           echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
