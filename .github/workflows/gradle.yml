@@ -95,11 +95,11 @@ jobs:
 
               echo '🛑 Deteniendo aplicación anterior si existe...'
               PID=$(lsof -t -i:8080 -sTCP:LISTEN || true)
-              if [ -n "$PID" ]; then
-              echo "🔪 Matando proceso $PID en el puerto 8080..."
-              kill -9 $PID
+              if [ -n '$PID' ]; then
+                echo '🔪 Matando proceso $PID en el puerto 8080...'
+                kill -9 '$PID'
               else
-              echo "✅ No hay proceso escuchando en el puerto 8080."
+                echo '✅ No hay proceso escuchando en el puerto 8080.'
               fi
               
               echo '⚙️ Configurando variables de entorno...'
