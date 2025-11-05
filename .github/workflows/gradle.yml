@@ -129,6 +129,9 @@ jobs:
           chmod 600 ~/.ssh/google_compute_engine
           chmod 644 ~/.ssh/google_compute_engine.pub
 
+      - name: Wait for key propagation
+        run: sleep 25
+
       - name: Stop running service
         run: |
           echo "🧹 Deteniendo aplicación anterior..."
