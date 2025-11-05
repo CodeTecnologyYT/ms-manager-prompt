@@ -44,7 +44,7 @@ public class MailManagerAdapter implements MailManagerPort {
                 context.setVariables(variables);
 
                 // Proccess template and get HTML content
-                final var htmlContent = templateEngine.process("/mails/" + templateName, context);
+                final var htmlContent = templateEngine.process("mails/" + templateName, context);
 
                 // Create and send the email
                 final var message = mailSender.createMimeMessage();

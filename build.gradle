@@ -60,7 +60,7 @@ sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
-            includes = ['**/*.properties', '**/*.yml', '**/*.html', '**/*.xml', "reports/**/*.ttf", "reports/**/*.xml", "reports/**/*.jasper", "reports/**/*.jrxml"]
+            includes = ['**/*.properties', '**/*.yml', 'templates/**/*.html', '**/*.xml', "reports/**/*.ttf", "reports/**/*.xml", "reports/**/*.jasper", "reports/**/*.jrxml"]
         }
     }
 }
