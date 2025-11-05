@@ -1,6 +1,7 @@
 package com.kaust.ms.manager.prompt.chat.application;
 
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
+import org.springframework.ai.chat.model.ChatResponse;
 import reactor.core.publisher.Flux;
 
 public interface IProcessChatMessageStreamUseCase {
