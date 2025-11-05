@@ -94,7 +94,13 @@ jobs:
               cd /home/${{secrets.GCLOUD_USERNAME}}/app
 
               echo '🛑 Deteniendo aplicación anterior si existe...'
-              kill -9 $(lsof -t -i:8080 -sTCP:LISTEN)
+              PID=$(lsof -t -i:8080 -sTCP:LISTEN || true)
+              if [ -n "$PID" ]; then
+              echo "🔪 Matando proceso $PID en el puerto 8080..."
+              kill -9 $PID
+              else
+              echo "✅ No hay proceso escuchando en el puerto 8080."
+              fi
               
               echo '⚙️ Configurando variables de entorno...'
               echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > service-account.json
