@@ -106,6 +106,7 @@ jobs:
           echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
+            --project=${{secrets.GCLOUD_PROJECT_ID}} \
             --quiet \
             --command="pkill -f 'java -jar' || true"
           echo "✅ Despliegue finalizado correctamente 🚀"
