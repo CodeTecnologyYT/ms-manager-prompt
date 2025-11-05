@@ -104,6 +104,7 @@ jobs:
       - name: Stop service
         run: |
           echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
+          sleep 20
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --zone=${{secrets.GCLOUD_ZONE}} \
             --project=${{secrets.GCLOUD_PROJECT_ID}} \
