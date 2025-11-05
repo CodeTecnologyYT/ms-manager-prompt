@@ -91,7 +91,7 @@ jobs:
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
-            --command="mkdir -p /home/${{ secrets.GCLOUD_USERNAME }}/app"
+            --command="sudo pkill -f 'java -jar' || true"
 
       - name: Configure environment and restart app
         run: |
