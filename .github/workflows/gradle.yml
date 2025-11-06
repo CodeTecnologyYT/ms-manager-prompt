@@ -120,7 +120,7 @@ jobs:
               export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d)
 
               echo "🚀 Iniciando aplicación..."
-              source \$HOME/.sdkman/bin/sdkman-init.sh
+              source $HOME/.sdkman/bin/sdkman-init.sh
               java -version
               nohup java -jar app.jar > app.log 2>&1 & echo $! > app.pid
               echo "✅ Aplicación levantada correctamente con PID:" $(cat app.pid)
