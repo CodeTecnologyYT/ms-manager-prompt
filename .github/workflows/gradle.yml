@@ -122,7 +122,7 @@ jobs:
               echo "🚀 Iniciando aplicación..."
               source \$HOME/.sdkman/bin/sdkman-init.sh
               java -version
-              nohup java -jar app.jar > app.log 2>&1 & echo \$! > app.pid
-              echo "✅ Aplicación levantada correctamente con PID:" \$(cat app.pid)
+              nohup java -jar app.jar > app.log 2>&1 & echo $! > app.pid
+              echo "✅ Aplicación levantada correctamente con PID:" $(cat app.pid)
             '
           echo "✅ Despliegue completado con PID controlado 🎯"
