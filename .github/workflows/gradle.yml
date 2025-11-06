@@ -90,39 +90,39 @@ jobs:
           gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
             --quiet \
             --zone=${{secrets.GCLOUD_ZONE}} \
-            --command="
+            --command='
               cd /home/${{secrets.GCLOUD_USERNAME}}/app
 
-              echo '🛑 Deteniendo aplicación anterior si existe...'
-              PID=$(lsof -t -i:8080 -sTCP:LISTEN || true)
-              echo 'PID: $PID'
-              if [ -n '$PID' ]; then
-                echo '🔪 Matando proceso $PID en el puerto 8080...'
-                kill -9 '$PID'
+              echo "🛑 Deteniendo aplicación anterior si existe..."
+              PID=$(lsof -t -i:8080 -sTCP:LISTEN 2>/dev/null | tr -d '\n' || echo "")
+              echo "PID: $PID"
+              if [ -n "$PID" ]; then
+                echo "🔪 Matando proceso $PID en el puerto 8080..."
+                kill -9 "$PID"
               else
-                echo '✅ No hay proceso escuchando en el puerto 8080.'
+                echo "✅ No hay proceso escuchando en el puerto 8080."
               fi
               
-              echo '⚙️ Configurando variables de entorno...'
-              echo '${{ secrets.GCLOUD_SERVICE_KEY_B64 }}' | base64 -d > service-account.json
+              echo "⚙️ Configurando variables de entorno..."
+              echo "${{ secrets.GCLOUD_SERVICE_KEY_B64 }}" | base64 -d > service-account.json
               export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
 
-              export DB_HOST='${{ secrets.DB_HOST }}'
-              export DB_PORT='${{ secrets.DB_PORT }}'
-              export DB_USERNAME='${{ secrets.DB_USERNAME }}'
-              export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-              export DB_DATABASE='${{ secrets.DB_DATABASE }}'
-              export SMTP_HOST='${{ secrets.SMTP_HOST }}'
-              export SMTP_PORT='${{ secrets.SMTP_PORT }}'
-              export SMTP_USERNAME='${{ secrets.SMTP_USERNAME }}'
-              export SMTP_PASSWORD='${{ secrets.SMTP_PASSWORD }}'
-              export AI_OPENAI='${{ secrets.AI_OPENAI }}'
-              export FIREBASE_SERVICE_ACCOUNT_JSON=\$(echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}' | base64 -d)
+              export DB_HOST="${{ secrets.DB_HOST }}"
+              export DB_PORT="${{ secrets.DB_PORT }}"
+              export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+              export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+              export DB_DATABASE="${{ secrets.DB_DATABASE }}"
+              export SMTP_HOST="${{ secrets.SMTP_HOST }}"
+              export SMTP_PORT="${{ secrets.SMTP_PORT }}"
+              export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
+              export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
+              export AI_OPENAI="${{ secrets.AI_OPENAI }}"
+              export FIREBASE_SERVICE_ACCOUNT_JSON=\$(echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d)
 
-              echo '🚀 Iniciando aplicación...'
+              echo "🚀 Iniciando aplicación..."
               source \$HOME/.sdkman/bin/sdkman-init.sh
               java -version
               nohup java -jar app.jar > app.log 2>&1 & echo \$! > app.pid
-              echo '✅ Aplicación levantada correctamente con PID:' \$(cat app.pid)
-            "
+              echo "✅ Aplicación levantada correctamente con PID:" \$(cat app.pid)
+            '
           echo "✅ Despliegue completado con PID controlado 🎯"
