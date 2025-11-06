@@ -117,7 +117,7 @@ jobs:
               export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
               export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
               export AI_OPENAI="${{ secrets.AI_OPENAI }}"
-              export FIREBASE_SERVICE_ACCOUNT_JSON=\$(echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d)
+              export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d)
 
               echo "🚀 Iniciando aplicación..."
               source \$HOME/.sdkman/bin/sdkman-init.sh
