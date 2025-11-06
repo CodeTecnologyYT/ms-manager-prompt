@@ -1,0 +1,127 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Deploy JAR to Google VM
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 🧱 Job 1: Build the JAR
+  build:
+    name: 🧱 Build JAR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build Spring Boot JAR
+        run: |
+          echo "🏗️ Compilando aplicación..."
+          ./gradlew clean bootJar -x test
+          echo "✅ JAR generado correctamente"
+      
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+  # ☁️ Job 2: Upload the JAR to Google VM
+  upload:
+    name: ☁️ Upload JAR to VM
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCLOUD_SERVICE_KEY }}
+      
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
+
+      - name: Verify gcloud connection
+        run: |
+          echo "🔍 Verificando conexión con Google Cloud..."
+          gcloud auth list
+          gcloud config list project
+          echo "✅ Autenticación correcta 🎉"
+
+      - name: Prepare remote directory
+        run: |
+          echo "🗂️ Creando carpeta /home/${{ secrets.GCLOUD_USERNAME }}/app en la VM..."
+          gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
+            --zone=${{secrets.GCLOUD_ZONE}} \
+            --command="mkdir -p /home/${{ secrets.GCLOUD_USERNAME }}/app"
+
+      - name: Upload JAR to VM
+        run: |
+          echo "📦 Enviando JAR a la VM..."
+          gcloud compute scp *.jar ${{secrets.GCLOUD_USERNAME}}@${{secrets.GCLOUD_INSTANCIA}}:/home/${{secrets.GCLOUD_USERNAME}}/app/app.jar \
+            --zone=${{secrets.GCLOUD_ZONE}} \
+            --project=${{secrets.GCLOUD_PROJECT_ID}}
+          echo "✅ JAR enviado con éxito 🎯"
+
+      - name: Configure environment and restart app
+        run: |
+          echo "🚀 Iniciando aplicación en background..."
+          gcloud compute ssh ${{ secrets.GCLOUD_USERNAME }}@${{ secrets.GCLOUD_INSTANCIA }} \
+            --quiet \
+            --zone=${{secrets.GCLOUD_ZONE}} \
+            --command='
+              cd /home/${{secrets.GCLOUD_USERNAME}}/app
+
+              echo "🛑 Deteniendo aplicación anterior si existe..."
+              PID=$(lsof -t -i:8080 -sTCP:LISTEN 2>/dev/null | tr -d '\n' || echo "")
+              if [ -n "$PID" ]; then
+                echo "🔪 Matando proceso $PID en el puerto 8080..."
+                kill -9 "$PID"
+              else
+                echo "✅ No hay proceso escuchando en el puerto 8080."
+              fi
+              
+              echo "⚙️ Configurando variables de entorno..."
+              echo "${{ secrets.GCLOUD_SERVICE_KEY_B64 }}" | base64 -d > service-account.json
+              export GOOGLE_APPLICATION_CREDENTIALS=/home/${{ secrets.GCLOUD_USERNAME }}/app/service-account.json
+
+              export DB_HOST="${{ secrets.DB_HOST }}"
+              export DB_PORT="${{ secrets.DB_PORT }}"
+              export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+              export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+              export DB_DATABASE="${{ secrets.DB_DATABASE }}"
+              export SMTP_HOST="${{ secrets.SMTP_HOST }}"
+              export SMTP_PORT="${{ secrets.SMTP_PORT }}"
+              export SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}"
+              export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
+              export AI_OPENAI="${{ secrets.AI_OPENAI }}"
+              export FIREBASE_SERVICE_ACCOUNT_JSON=$(echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d)
+
+              echo "🚀 Iniciando aplicación..."
+              source $HOME/.sdkman/bin/sdkman-init.sh
+              java -version
+              nohup java -jar app.jar > app.log 2>&1 & echo $! > app.pid
+              echo "✅ Aplicación levantada correctamente con PID:" $(cat app.pid)
+            '
+          echo "✅ Despliegue completado con PID controlado 🎯"

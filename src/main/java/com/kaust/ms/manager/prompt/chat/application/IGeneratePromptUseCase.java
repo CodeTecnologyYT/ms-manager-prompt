@@ -1,6 +1,8 @@
 package com.kaust.ms.manager.prompt.chat.application;
 
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
+import org.springframework.ai.chat.model.ChatResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -12,6 +14,6 @@ public interface IGeneratePromptUseCase {
      * @param messageRequest {@link MessageRequest}
      * @return flux {@link String}
      */
-    Mono<String> handle(MessageRequest messageRequest);
+    Flux<String> handle(MessageRequest messageRequest);
 
 }

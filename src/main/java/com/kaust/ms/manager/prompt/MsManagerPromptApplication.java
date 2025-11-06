@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @PropertySource("classpath:database.properties")
 @PropertySource("classpath:mail.properties")
 @PropertySource("classpath:firebase.properties")
+@PropertySource("classpath:ai.properties")
 public class MsManagerPromptApplication {
 
     public static void main(String[] args) {

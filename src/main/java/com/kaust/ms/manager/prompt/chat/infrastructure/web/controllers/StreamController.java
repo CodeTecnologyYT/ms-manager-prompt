@@ -5,6 +5,7 @@ import com.kaust.ms.manager.prompt.chat.application.IProcessChatMessageStreamUse
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,5 +34,7 @@ public class StreamController {
     public Flux<String> processChatMessageStream(@CurrentUser UserData userData, @RequestBody MessageRequest messageRequest) {
         return iProcessChatMessageStreamUseCase.execute(userData.getUid(), messageRequest);
     }
+
+
 
 }
