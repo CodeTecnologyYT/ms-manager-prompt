@@ -11,12 +11,19 @@ import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
 import com.kaust.ms.manager.prompt.report.application.IGeneratePDFUseCase;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
 import com.kaust.ms.manager.prompt.shared.models.PageResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +36,7 @@ import java.nio.ByteBuffer;
 @RequestMapping("/chats")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Chat", description = "API chats")
 public class ChatController {
 
     /*
@@ -72,6 +80,10 @@ public class ChatController {
      * @return mono {@link ChatResponse}
      */
     @GetMapping("/{chatId}")
+    @Operation(summary = "Get chat by id", description = "Retrieve a chats by id and user.")
+    @ApiResponse(responseCode = "200", description = "Success get chats by id.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<ChatResponse> getChatById(@CurrentUser UserData userData,
                                           @PathVariable("chatId") String chatId) {
         return iGetChatByIdUseCase.handle(chatId, userData.getUid());
@@ -86,6 +98,10 @@ public class ChatController {
      * @return mono of page {@link MessageResponse}
      */
     @GetMapping("/{chatId}/messages")
+    @Operation(summary = "Get all message by chat id and user", description = "Retrieve all messages by chat id and user.")
+    @ApiResponse(responseCode = "200", description = "Success get messages by chat id.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<PageResponse<MessageResponse>> getAllMessageByChatId(@CurrentUser UserData userData,
                                                                      @PathVariable("chatId") String chatId,
                                                                      @RequestParam(defaultValue = "0") int page,
@@ -98,12 +114,20 @@ public class ChatController {
      * Create chat.
      *
      * @param userData    {@link UserData}
-     * @param chatRequest {@link ChatRequest}
+     * @param chatRequest mono {@link ChatRequest}
      * @return mono {@link String}
      */
     @PostMapping
-    public Mono<ChatResponse> createChat(@CurrentUser UserData userData, @RequestBody ChatRequest chatRequest) {
-        return iSaveChatUseCase.handle(userData.getUid(), chatRequest);
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a chat", description = "Create a chat by user.")
+    @ApiResponse(responseCode = "201", description = "Success create a chat by user.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<ChatResponse> createChat(@CurrentUser UserData userData,
+                                         @Valid @RequestBody Mono<ChatRequest> chatRequest) {
+        return chatRequest.flatMap(request ->
+                iSaveChatUseCase.handle(userData.getUid(), request));
+
     }
 
     /**
@@ -113,6 +137,10 @@ public class ChatController {
      * @return mono of page {@link ChatResponse}
      */
     @GetMapping
+    @Operation(summary = "Get all chats", description = "Retrieve all chats by user.")
+    @ApiResponse(responseCode = "200", description = "Success get chats by user.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<PageResponse<ChatResponse>> getChatByUserId(@CurrentUser UserData userData,
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
@@ -130,12 +158,17 @@ public class ChatController {
      * @return mono of page {@link ChatResponse}
      */
     @PostMapping("/search")
+    @Operation(summary = "Search chats by text", description = "Retrieve search chats by text.")
+    @ApiResponse(responseCode = "200", description = "Success search chats by text.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<PageResponse<ChatResponse>> searchChatByText(@CurrentUser UserData userData,
-                                                             @RequestBody SearchPromptRequest search,
+                                                             @Valid @RequestBody Mono<SearchPromptRequest> search,
                                                              @RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size) {
         final var pageable = PageRequest.of(page, size);
-        return iSearchChatUseCase.handle(userData.getUid(), search.getTextSearch(), pageable);
+        return search.flatMap(request ->
+                iSearchChatUseCase.handle(userData.getUid(), request.getTextSearch(), pageable));
     }
 
     /**
@@ -147,10 +180,15 @@ public class ChatController {
      * @return mono {@link ChatResponse}
      */
     @PutMapping("/{chatId}/model")
+    @Operation(summary = "Search chats by text", description = "Retrieve search chats by text.")
+    @ApiResponse(responseCode = "200", description = "Success search chats by text.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<ChatResponse> updateChatModel(@CurrentUser UserData userData,
                                               @PathVariable("chatId") String chatId,
-                                              @RequestBody final ModelRequest modelRequest) {
-        return iUpdateChatByModelUseCase.handle(chatId, userData.getUid(), modelRequest);
+                                              @Valid @RequestBody Mono<ModelRequest> modelRequest) {
+        return modelRequest.flatMap(request ->
+                iUpdateChatByModelUseCase.handle(chatId, userData.getUid(), request));
     }
 
     /**
@@ -162,11 +200,16 @@ public class ChatController {
      * @return mono{@link Void}
      */
     @PostMapping("/{chatId}/sharing/email")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Send email sharing chat", description = "Send email sharing chat.")
+    @ApiResponse(responseCode = "204", description = "Success send email sharing chat.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<Void> sendEmailSharingChat(@CurrentUser UserData userData,
                                            @PathVariable("chatId") String chatId,
-                                           @RequestBody final MailRequest mailRequest) {
-        return iGeneratePDFSharingChatUseCase.handle(chatId, userData.getUid()).
-                flatMap(bytes -> iSendMailSharingChatUseCase.handle(mailRequest.getTo(), userData.getUid(), chatId, bytes));
+                                           @Valid @RequestBody Mono<MailRequest> mailRequest) {
+        return mailRequest.flatMap(request -> iGeneratePDFSharingChatUseCase.handle(chatId, userData.getUid()).
+                flatMap(bytes -> iSendMailSharingChatUseCase.handle(request.getTo(), userData.getUid(), chatId, bytes)));
     }
 
     /**
@@ -177,6 +220,10 @@ public class ChatController {
      * @return mono{@link Void}
      */
     @PostMapping(value = "{chatId}/sharing/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @Operation(summary = "Generate report sharing chat", description = "Generate report sharing chat.")
+    @ApiResponse(responseCode = "200", description = "Success generate report sharing chat.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
     public Mono<ResponseEntity<Flux<DefaultDataBuffer>>> generatePdfReport(@CurrentUser UserData userData,
                                                                            @PathVariable("chatId") String chatId) {
 

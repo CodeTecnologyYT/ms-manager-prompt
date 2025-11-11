@@ -28,27 +28,48 @@ repositories {
 }
 
 dependencies {
+    // Library of webflux and testing
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation 'org.springframework.ai:spring-ai-bom:1.1.0-M4'
-    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
-    testImplementation 'io.projectreactor:reactor-test'
-    compileOnly 'org.projectlombok:lombok'
-    implementation 'com.google.cloud:google-cloud-logging-logback:0.132.18-alpha'
-    implementation 'net.sf.jasperreports:jasperreports-pdf:7.0.3'
-    implementation 'org.mapstruct:mapstruct:1.6.3'
-    implementation 'com.google.firebase:firebase-admin:9.7.0'
-    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Library of security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.google.firebase:firebase-admin:9.7.0'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // Library aspects
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Library of persist or database
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+    // Library of AI
+    implementation 'org.springframework.ai:spring-ai-bom:1.1.0-M4'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+
+    // Library of email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Library of report
+    implementation 'net.sf.jasperreports:jasperreports-pdf:7.0.3'
+
+    // Libraries documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'
+
+    // Library of logging cloud
+    implementation 'com.google.cloud:google-cloud-logging-logback:0.132.18-alpha'
+
+    // Library of mapping and constructor automatic
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 }
 dependencyManagement {
     imports {

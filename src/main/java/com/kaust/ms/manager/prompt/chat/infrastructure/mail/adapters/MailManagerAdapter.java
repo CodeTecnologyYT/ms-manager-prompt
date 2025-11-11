@@ -1,9 +1,12 @@
 package com.kaust.ms.manager.prompt.chat.infrastructure.mail.adapters;
 
 import com.kaust.ms.manager.prompt.chat.domain.ports.MailManagerPort;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -61,7 +64,7 @@ public class MailManagerAdapter implements MailManagerPort {
 
                 return true;
             } catch (MessagingException e) {
-                throw new RuntimeException("Error enviando email", e);
+                throw new ManagerPromptException(ManagerPromptError.ERROR_MAIL_SENDING, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
             }
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }

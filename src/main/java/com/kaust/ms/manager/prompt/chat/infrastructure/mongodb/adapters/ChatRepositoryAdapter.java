@@ -1,5 +1,6 @@
 package com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.adapters;
 
+import com.google.api.Http;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.ChatRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatResponse;
 import com.kaust.ms.manager.prompt.chat.domain.ports.ChatRepositoryPort;
@@ -7,9 +8,11 @@ import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToChatDocumentMap
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToChatResponseMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.ChatDocument;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.repositories.ChatRepository;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -48,7 +51,7 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
     public Mono<ChatResponse> findByIdAndByUserId(final String chatId, final String userId) {
         return chatRepository.findByUserIdAndId(userId, chatId)
                 .map(toChatResponseMapper::transformChatDocumentToChatResponse)
-                .switchIfEmpty(Mono.error(new ManagerPromptException("Chat not found")));
+                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_CHAT_NOT_FOUND, HttpStatus.NOT_FOUND.value())));
     }
 
     /**
@@ -57,7 +60,7 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
     @Override
     public Mono<ChatDocument> findById(final String chatId, final String userId) {
         return chatRepository.findByUserIdAndId(userId, chatId)
-                .switchIfEmpty(Mono.error(new ManagerPromptException("Chat not found")));
+                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_CHAT_NOT_FOUND, HttpStatus.NOT_FOUND.value())));
     }
 
     /**

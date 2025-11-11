@@ -1,12 +1,15 @@
 package com.kaust.ms.manager.prompt.report.infrastructure.jasperreport.adapter;
 
 import com.kaust.ms.manager.prompt.report.domain.ports.ReportPort;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -27,7 +30,6 @@ public class JasperReportAdapter implements ReportPort {
                                           List<?> dataSource) {
         return Mono.fromCallable(() -> {
             try {
-                log.info("Generando reporte PDF desde: {}", reportPath);
 
                 // Cargar el archivo .jasper compilado
                 final var reportStream = new ClassPathResource(reportPath).getInputStream();
@@ -46,8 +48,7 @@ public class JasperReportAdapter implements ReportPort {
                 return pdfBytes;
 
             } catch (Exception e) {
-                log.error("Error al generar el reporte: {}", e.getMessage(), e);
-                throw new RuntimeException("Error al generar el reporte: " + e.getMessage(), e);
+                throw new ManagerPromptException(ManagerPromptError.ERROR_REPORT_CORRUPT, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
             }
         });
     }

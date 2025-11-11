@@ -7,8 +7,10 @@ import com.kaust.ms.manager.prompt.auth.domain.models.UserData;
 import com.kaust.ms.manager.prompt.auth.domain.ports.AuthPort;
 import com.kaust.ms.manager.prompt.auth.infrastructure.mappers.FirebaseTokenToUserDataMapper;
 import com.kaust.ms.manager.prompt.auth.infrastructure.mappers.UserRecordToUserDataMapper;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -33,7 +35,7 @@ public class FirebaseAuthAdapter implements AuthPort {
             try {
                 return FirebaseAuth.getInstance().verifyIdToken(token);
             } catch (FirebaseAuthException e) {
-                throw new ManagerPromptException("Error verificando token", e);
+                throw new ManagerPromptException(ManagerPromptError.ERROR_AUTHENTICATION_INVALID, HttpStatus.UNAUTHORIZED.value(), e);
             }
         }).map(firebaseTokenToUserDataMapper::transformFirebaseTokenToUserData);
     }
@@ -47,7 +49,7 @@ public class FirebaseAuthAdapter implements AuthPort {
             try {
                 return FirebaseAuth.getInstance().getUser(userUid);
             } catch (FirebaseAuthException e) {
-                throw new ManagerPromptException("Error obtener los datos", e);
+                throw new ManagerPromptException(ManagerPromptError.ERROR_USER_NOT_FOUND, HttpStatus.NO_CONTENT.value(), e);
             }
         }).map(userRecordToUserDataMapper::transformUserRecordToUserData);
     }

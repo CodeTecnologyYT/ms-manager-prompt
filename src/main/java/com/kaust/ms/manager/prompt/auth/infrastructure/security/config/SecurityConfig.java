@@ -2,11 +2,13 @@ package com.kaust.ms.manager.prompt.auth.infrastructure.security.config;
 
 import com.kaust.ms.manager.prompt.auth.infrastructure.security.converts.AuthenticationConvert;
 import com.kaust.ms.manager.prompt.auth.infrastructure.security.manager.AuthenticationManager;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -46,7 +48,7 @@ public class SecurityConfig {
         final var authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
         authenticationWebFilter.setServerAuthenticationConverter(authenticationConverter);
         authenticationWebFilter.setAuthenticationFailureHandler((exchange, exception) ->
-                Mono.error(new ManagerPromptException("Error de autenticación: " + exception.getMessage())));
+                Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_AUTHENTICATION_EXPIRE, HttpStatus.UNAUTHORIZED.value(), exception)));
 
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -61,7 +63,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((exchange, ex) ->
-                                Mono.error(new ManagerPromptException("No autorizado: " + ex.getMessage()))))
+                                Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_AUTHENTICATION_EXPIRE, HttpStatus.UNAUTHORIZED.value(), ex))))
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();

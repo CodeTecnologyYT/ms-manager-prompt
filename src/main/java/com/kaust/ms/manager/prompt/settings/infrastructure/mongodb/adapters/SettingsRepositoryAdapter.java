@@ -7,8 +7,10 @@ import com.kaust.ms.manager.prompt.settings.infrastructure.mappers.ToSettingsDoc
 import com.kaust.ms.manager.prompt.settings.infrastructure.mappers.ToSettingsResponseMapper;
 import com.kaust.ms.manager.prompt.settings.infrastructure.mongodb.documents.SettingsDocument;
 import com.kaust.ms.manager.prompt.settings.infrastructure.mongodb.repositories.CustomRepository;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -35,7 +37,7 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     @Override
     public Mono<ModelGlobalResponse> findByUserId(final String userId) {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .switchIfEmpty(Mono.error(new ManagerPromptException("No se encontro customize")))
+                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_SETTINGS_NOT_FOUND, HttpStatus.NOT_FOUND.value())))
                 .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse);
     }
 
@@ -45,7 +47,7 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     @Override
     public Mono<SettingsDocument> findByUserIdToDocument(final String userId) {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .switchIfEmpty(Mono.error(new ManagerPromptException("No se encontro customize")));
+                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_SETTINGS_NOT_FOUND, HttpStatus.NOT_FOUND.value())));
     }
 
 
@@ -54,8 +56,16 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
      */
     @Override
     public Mono<ModelGlobalResponse> save(final String userId) {
-        return customRepository.save(toSettingsDocumentMapper.transformToStartedSettings(userId))
-                .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse);
+        return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
+                .flatMap(existingConfiguration -> {
+                    if (existingConfiguration != null) {
+                        return Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_SETTINGS_EXIST, HttpStatus.CONFLICT.value()));
+                    }
+                    return Mono.empty();
+                })
+                .switchIfEmpty(Mono.defer(() -> customRepository.save(toSettingsDocumentMapper.transformToStartedSettings(userId))
+                        .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse)))
+                .cast(ModelGlobalResponse.class);
     }
 
     /**
@@ -65,9 +75,8 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     public Mono<ModelGlobalResponse> update(final String userId,
                                             final SettingsDocument settingsDocument,
                                             final ModelGlobalRequest modelGlobalRequest) {
-
         return customRepository.save(toSettingsDocumentMapper
-                .transformSettingsRequestToSettingsDocument(userId, settingsDocument, modelGlobalRequest))
+                        .transformSettingsRequestToSettingsDocument(userId, settingsDocument, modelGlobalRequest))
                 .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse);
     }
 

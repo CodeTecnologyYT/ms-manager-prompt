@@ -1,8 +1,11 @@
 package com.kaust.ms.manager.prompt.auth.infrastructure.security.manager;
 
+import com.google.api.Http;
 import com.kaust.ms.manager.prompt.auth.application.IVerifyTokenUserUseCase;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +29,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         if (authentication == null || authentication.getCredentials() == null) {
-            return Mono.error(new ManagerPromptException("Token de autenticación no proporcionado"));
+            return Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_AUTHENTICATION_NOT_TOKEN, HttpStatus.UNAUTHORIZED.value()));
         }
 
         return iVerifyTokenUserUseCase.handle(authentication.getCredentials().toString())
@@ -40,7 +43,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     return auth;
                 })
                 .onErrorResume(ManagerPromptException.class, ex ->
-                        Mono.error(new ManagerPromptException("Error en la verificacion", ex)));
+                        Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_AUTHENTICATION_EXPIRE, HttpStatus.UNAUTHORIZED.value(), ex)));
     }
 
 }

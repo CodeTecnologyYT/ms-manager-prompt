@@ -4,6 +4,12 @@ import com.kaust.ms.manager.prompt.auth.domain.models.UserData;
 import com.kaust.ms.manager.prompt.chat.application.IProcessChatMessageStreamUseCase;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.http.MediaType;
@@ -12,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/stream")
 @RequiredArgsConstructor
+@Tag(name = "Stream", description = "API stream")
 public class StreamController {
 
     /**
@@ -31,8 +39,13 @@ public class StreamController {
      * @return flux {@link String}
      */
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> processChatMessageStream(@CurrentUser UserData userData, @RequestBody MessageRequest messageRequest) {
-        return iProcessChatMessageStreamUseCase.execute(userData.getUid(), messageRequest);
+    @Operation(summary = "Response stream of chat messages", description = "Response stream of chat messages.")
+    @ApiResponse(responseCode = "200", description = "Success response stream of chat messages.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Flux<String> processChatMessageStream(@CurrentUser UserData userData, @Valid @RequestBody Mono<MessageRequest> messageRequest) {
+        return messageRequest.flatMapMany(request ->
+                        iProcessChatMessageStreamUseCase.execute(userData.getUid(), request));
     }
 
 
