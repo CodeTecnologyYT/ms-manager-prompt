@@ -28,7 +28,7 @@ public interface ChatRepository extends ReactiveMongoRepository<ChatDocument, St
      * @param pageable {@link Pageable}
      * @return {@link Flux}
      */
-    Flux<ChatDocument> findByUserIdAndStateAndFolderIdIsNull(String userId, ChatDocument.State state, Pageable pageable);
+    Flux<ChatDocument> findByUserIdAndStateAndFolderIdIsNullOrderByCreatedAtDesc(String userId, ChatDocument.State state, Pageable pageable);
 
     /**
      * Count chats by user id and state.

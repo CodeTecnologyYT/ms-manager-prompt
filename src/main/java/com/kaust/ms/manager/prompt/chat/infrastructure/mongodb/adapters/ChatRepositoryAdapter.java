@@ -68,7 +68,7 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
      */
     @Override
     public Flux<ChatResponse> findByUserIdAndStateActive(final String userId, final Pageable pageable) {
-        return chatRepository.findByUserIdAndStateAndFolderIdIsNull(userId, ChatDocument.State.ACTIVE, pageable)
+        return chatRepository.findByUserIdAndStateAndFolderIdIsNullOrderByCreatedAtDesc(userId, ChatDocument.State.ACTIVE, pageable)
                 .map(toChatResponseMapper::transformChatDocumentToChatResponse);
     }
 
