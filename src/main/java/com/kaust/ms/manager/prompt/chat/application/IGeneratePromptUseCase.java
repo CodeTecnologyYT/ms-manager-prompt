@@ -14,6 +14,6 @@ public interface IGeneratePromptUseCase {
      * @param messageRequest {@link MessageRequest}
      * @return flux {@link String}
      */
-    Flux<String> handle(MessageRequest messageRequest);
+    Flux<ChatResponse> handle(MessageRequest messageRequest);
 
 }

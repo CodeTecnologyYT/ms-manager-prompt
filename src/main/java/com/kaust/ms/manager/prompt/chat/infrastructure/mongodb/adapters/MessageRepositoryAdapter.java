@@ -6,6 +6,7 @@ import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
 import com.kaust.ms.manager.prompt.chat.domain.ports.MessageRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageDocumentMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageResponseMapper;
+import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.repositories.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -34,11 +35,10 @@ public class MessageRepositoryAdapter implements MessageRepositoryPort {
      * @inheritDoc.
      */
     @Override
-    public Mono<Void> saveMessage(final String userId, final Role role,
-                                  final MessageRequest message) {
+    public Mono<MessageDocument> saveMessage(final String userId, final Role role,
+                                             final MessageRequest message) {
         return messageRepository.save(toMessageDocumentMapper
-                        .transformMessageRequestToMessageDocument(role, userId, message))
-                .thenEmpty(Mono.empty());
+                        .transformMessageRequestToMessageDocument(role, userId, message));
     }
 
     /**
