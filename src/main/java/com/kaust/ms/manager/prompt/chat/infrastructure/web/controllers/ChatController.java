@@ -64,6 +64,10 @@ public class ChatController {
      */
     private final IUpdateChatByModelUseCase iUpdateChatByModelUseCase;
     /**
+     * updateChatUseCase.
+     */
+    private final IUpdateChatUseCase updateChatUseCase;
+    /**
      * iSendMailSharingChatUseCase.
      */
     private final ISendMailSharingChatUseCase iSendMailSharingChatUseCase;
@@ -239,6 +243,24 @@ public class ChatController {
                             .contentType(MediaType.APPLICATION_PDF)
                             .body(Flux.just(buffer));
                 });
+    }
+
+
+    /**
+     * Unlink a folder with chat.
+     *
+     * @param userData {@link UserData}
+     * @param idChat   {@link String}
+     * @return {@link ChatResponse}
+     */
+    @PutMapping("/{idChat}/unlink")
+    @Operation(summary = "Link a folder with chat", description = "Link a folder with chat.")
+    @ApiResponse(responseCode = "200", description = "Success link a folder with chat.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<ChatResponse> unlinkFolderWithChat(@CurrentUser UserData userData,
+                                                   @PathVariable("idChat") String idChat) {
+        return updateChatUseCase.handle(userData.getUid(), null, idChat);
     }
 
 }
