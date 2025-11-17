@@ -54,6 +54,7 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
                 .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_CHAT_NOT_FOUND, HttpStatus.NOT_FOUND.value())));
     }
 
+
     /**
      * @inheritDoc.
      */

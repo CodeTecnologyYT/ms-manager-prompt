@@ -17,14 +17,7 @@ public interface ChatRepositoryPort {
      */
     Mono<ChatResponse> save(String userId, ChatRequest chatRequest);
 
-    /**
-     * Save a message.
-     *
-     * @param chatId {@link ChatResponse}
-     * @param userId {@link String}
-     * @return mono {@link ChatResponse}
-     */
-    Mono<ChatResponse> findByIdAndByUserId(String chatId, String userId);
+    Mono<ChatResponse> findByIdAndByUserId(final String chatId, final String userId);
 
     /**
      * Save a message.

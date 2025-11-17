@@ -19,7 +19,7 @@ public class GeneratePromptUseCase implements IGeneratePromptUseCase {
      * @inheritDoc.
      */
     @Override
-    public Flux<String> handle(final MessageRequest messageRequest) {
+    public Flux<ChatResponse> handle(final MessageRequest messageRequest) {
         return reactiveRagChatPort.ask(messageRequest.getContent());
     }
 

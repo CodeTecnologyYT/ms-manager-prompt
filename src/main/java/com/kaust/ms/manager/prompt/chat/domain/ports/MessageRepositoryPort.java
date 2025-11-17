@@ -3,6 +3,7 @@ package com.kaust.ms.manager.prompt.chat.domain.ports;
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,9 +15,9 @@ public interface MessageRepositoryPort {
      *
      * @param role {@link Role}
      * @param message {@link MessageRequest}
-     * @return {@link Void}
+     * @return {@link MessageDocument}
      */
-    Mono<Void> saveMessage(String userId, Role role, MessageRequest message);
+    Mono<MessageDocument> saveMessage(String userId, Role role, MessageRequest message);
 
     /**
      * Find messages by user id.
