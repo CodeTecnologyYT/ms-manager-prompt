@@ -32,14 +32,8 @@ public class GeneratePromptUseCase implements IGeneratePromptUseCase {
      * @inheritDoc.
      */
     @Override
-    public Flux<ChatResponse> handle(final MessageRequest messageRequest, final String userId,
-                                     final String modelChat, final Integer modelChatTemperature) {
-        return iGetModelGlobalByUserIdUseCase.handle(userId)
-                .flatMap(model -> {
-                    final var creative = Objects.nonNull(modelChatTemperature) ? modelChatTemperature : model.getQuantityCreativity();
-                    return ragChatConsumerApiPort.response(messageRequest.getContent(), creative);
-                })
-                .flatMapMany(bio -> reactiveRagChatPort.ask(bio.getAnswer()));
+    public Flux<ChatResponse> handle(String question) {
+        return reactiveRagChatPort.ask(question);
     }
 
 }

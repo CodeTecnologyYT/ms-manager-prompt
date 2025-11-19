@@ -1,6 +1,7 @@
 package com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents;
 
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +28,8 @@ public class MessageDocument {
     private String userId;
     /** content. */
     private String content;
+    /** entities. */
+    private List<BiomedicalResponse.Entity> entities;
     /** role. */
     private Role role;
     /** createdAt. */

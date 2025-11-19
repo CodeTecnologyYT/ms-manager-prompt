@@ -4,6 +4,7 @@ import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
 import com.kaust.ms.manager.prompt.chat.domain.ports.MessageRepositoryPort;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageDocumentMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageResponseMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,7 +39,8 @@ public class MessageRepositoryAdapter implements MessageRepositoryPort {
      */
     @Override
     public Mono<MessageDocument> saveMessage(final String userId, final Role role,
-                                             final MessageRequest message) {
+                                             final MessageRequest message,
+                                             final List<BiomedicalResponse.Entity> entities) {
         return messageRepository.save(toMessageDocumentMapper
                         .transformMessageRequestToMessageDocument(role, userId, message));
     }

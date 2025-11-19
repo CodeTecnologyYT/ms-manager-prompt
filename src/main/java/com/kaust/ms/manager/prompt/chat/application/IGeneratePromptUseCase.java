@@ -11,13 +11,8 @@ public interface IGeneratePromptUseCase {
     /**
      * Generate prompt.
      *
-     * @param messageRequest       {@link MessageRequest}
-     * @param userId               {@link String}
-     * @param modelChat            {@link String}
-     * @param modelChatTemperature {@link Integer}
      * @return flux {@link String}
      */
-    Flux<ChatResponse> handle(MessageRequest messageRequest, String userId,
-                              String modelChat, Integer modelChatTemperature);
+    Flux<ChatResponse> handle(String question);
 
 }
