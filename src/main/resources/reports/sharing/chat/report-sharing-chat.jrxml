@@ -35,13 +35,8 @@
 		</element>
 	</columnHeader>
 	<detail>
-		<band height="88" splitType="Immediate">
-			<element kind="textField" uuid="9b5247e8-14fc-4875-b5de-0c804e24aac9" stretchType="ContainerHeight" x="20" y="50" width="524" height="20" forecolor="#0C0C0C" markup="none" fontName="Open Sans" removeLineWhenBlank="true" hTextAlign="Right" vTextAlign="Middle">
-				<printWhenExpression><![CDATA[$F{role} != null && "ASSISTANT".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
-				<expression><![CDATA[$F{content}]]></expression>
-				<property name="com.jaspersoft.studio.element.name" value="ChatUser"/>
-			</element>
-			<element kind="rectangle" uuid="9edee7a8-36db-40bd-b387-a5923207b98d" stretchType="ElementGroupHeight" mode="Transparent" x="20" y="76" width="524" height="0" forecolor="#949494" backcolor="#030303">
+		<band height="77" splitType="Stretch">
+			<element kind="rectangle" uuid="9edee7a8-36db-40bd-b387-a5923207b98d" positionType="FixRelativeToBottom" stretchType="NoStretch" mode="Transparent" x="20" y="60" width="524" height="0" forecolor="#949494" backcolor="#030303">
 				<pen lineWidth="0.5"/>
 			</element>
 			<element kind="frame" uuid="3cb93638-9085-42ed-b500-d5c8ae5bed70" x="20" y="0" width="120" height="20">
@@ -64,8 +59,7 @@
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="49a77415-b1b3-4d5a-9a57-d429020b5faf"/>
 				</element>
 			</element>
-			<element kind="textField" uuid="3f2446d5-818b-48b3-a538-a0144b9d3c58" stretchType="ContainerHeight" x="20" y="27" width="524" height="20" forecolor="#0C0C0C" markup="none" fontName="Open Sans" removeLineWhenBlank="true" vTextAlign="Middle">
-				<printWhenExpression><![CDATA[$F{role} != null && "USER".equalsIgnoreCase($F{role}.trim())]]></printWhenExpression>
+			<element kind="textField" uuid="3f2446d5-818b-48b3-a538-a0144b9d3c58" stretchType="NoStretch" x="20" y="27" width="524" height="20" forecolor="#0C0C0C" markup="html" fontName="Open Sans" textAdjust="StretchHeight" removeLineWhenBlank="true" vTextAlign="Middle">
 				<expression><![CDATA[$F{content}]]></expression>
 				<property name="com.jaspersoft.studio.element.name" value="ChatUser"/>
 			</element>

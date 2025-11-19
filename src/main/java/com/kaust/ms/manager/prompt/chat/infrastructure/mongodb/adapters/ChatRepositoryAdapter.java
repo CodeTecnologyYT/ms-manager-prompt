@@ -8,6 +8,9 @@ import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToChatDocumentMap
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToChatResponseMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.ChatDocument;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.repositories.ChatRepository;
+import com.kaust.ms.manager.prompt.settings.application.IGetModelGlobalByUserIdUseCase;
+import com.kaust.ms.manager.prompt.settings.application.IGetModelsUseCase;
+import com.kaust.ms.manager.prompt.settings.domain.models.response.ModelGlobalResponse;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +36,19 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
      * toChatResponseMapper.
      */
     private final ToChatResponseMapper toChatResponseMapper;
+    /**
+     * iGetModelsUseCase.
+     */
+    private final IGetModelGlobalByUserIdUseCase iGetModelGlobalByUserIdUseCase;
+
 
     /**
      * @inheritDoc.
      */
     @Override
-    public Mono<ChatResponse> save(final String userId, final ChatRequest chatRequest) {
+    public Mono<ChatResponse> save(final String userId, final ChatRequest chatRequest, final ModelGlobalResponse model) {
         return chatRepository.save(toChatDocumentMapper
-                        .transformMessageRequestToChatDocument(userId, chatRequest))
+                        .transformMessageRequestToChatDocument(userId, chatRequest, model))
                 .map(toChatResponseMapper::transformChatDocumentToChatResponse);
     }
 

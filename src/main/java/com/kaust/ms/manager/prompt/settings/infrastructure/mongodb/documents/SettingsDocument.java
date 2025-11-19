@@ -1,10 +1,7 @@
 package com.kaust.ms.manager.prompt.settings.infrastructure.mongodb.documents;
 
 import com.kaust.ms.manager.prompt.settings.domain.enums.Model;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "settings")
 public class SettingsDocument {
 

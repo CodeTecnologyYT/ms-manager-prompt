@@ -7,6 +7,7 @@ import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.ports.ChatRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.HistoryActionRepositoryPort;
+import com.kaust.ms.manager.prompt.chat.domain.ports.RAGChatConsumerApiPort;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.HistoryActionsDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.metadata.EmptyUsage;
@@ -16,6 +17,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,7 +57,10 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                 .flatMapMany(chatDocument ->
                         saveMessageUseCase.handle(userId, Role.USER, messageRequest)
                                 .thenMany(
-                                        generatePromptUseCase.handle(messageRequest)
+                                        generatePromptUseCase.handle(messageRequest,
+                                                        userId,
+                                                        chatDocument.getModel().getName(),
+                                                        chatDocument.getQuantityCreativity())
                                                 .doOnNext(chatResponse -> {
                                                     if (!(chatResponse.getMetadata().getUsage() instanceof EmptyUsage)) {
                                                         usageRef.set(chatResponse.getMetadata().getUsage());
@@ -62,8 +68,20 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                 })
                                                 .filter(response -> Objects.nonNull(response.getResult()))
                                                 .mapNotNull(response -> response.getResult().getOutput().getText())
+                                                .scan(new StringBuilder(), StringBuilder::append)
+                                                .filter(sb ->  sb.toString().contains("\n"))
+                                                .map(sb -> {
+                                                    final var sentence = sb.toString();
+                                                    sb.setLength(0);
+                                                    return sentence;
+                                                })
+                                                .flatMap(sentence -> {
+                                                    final var wordSeparate = Arrays.stream(sentence.toString().split("(?<= )|(?<=\\n)"))
+                                                            .map(s -> s.endsWith(" ") ? s : s + " ");
+                                                    return Flux.fromStream(wordSeparate);
+                                                })
                                                 .filter(Objects::nonNull)
-                                                .doOnNext(text -> fullResponse.append(text).append(" "))
+                                                .doOnNext(fullResponse::append)
                                                 .doOnComplete(() -> messageRequest.setContent(fullResponse.toString().trim()))
                                                 // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
                                                 .concatWith(
@@ -89,6 +107,17 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                 )
                                 )
                 );
+    }
+
+    private String normalizeLineBreaks(String text) {
+        return text
+                .replace("\\n", "\n")                 // convertir \n escapado → salto real
+                .replace("\r\n", "\n")                // convertir CRLF → LF
+                .replace("\r", "\n")                  // convertir CR → LF
+                .replace("\u2028", "\n")              // Unicode line separator
+                .replace("\u2029", "\n")              // Unicode paragraph separator
+                .replaceAll("\n{2,}", "\n")           // colapsar múltiple saltos → uno
+                .trim();                              // limpiar bordes
     }
 
 }

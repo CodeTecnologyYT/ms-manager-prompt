@@ -8,9 +8,9 @@ public interface ReactiveRagChatPort {
     /**
      * Chat with RAG.
      *
-     * @param question {@link String}
+     * @param context  {@link String}
      * @return flux {@link ChatResponse}
      */
-    Flux<ChatResponse> ask(String question);
+    Flux<ChatResponse> ask(String context);
 
 }

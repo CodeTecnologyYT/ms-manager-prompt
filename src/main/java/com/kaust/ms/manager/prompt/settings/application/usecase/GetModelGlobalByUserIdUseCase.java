@@ -1,6 +1,7 @@
 package com.kaust.ms.manager.prompt.settings.application.usecase;
 
 import com.kaust.ms.manager.prompt.settings.application.IGetModelGlobalByUserIdUseCase;
+import com.kaust.ms.manager.prompt.settings.domain.enums.Model;
 import com.kaust.ms.manager.prompt.settings.domain.models.response.ModelGlobalResponse;
 import com.kaust.ms.manager.prompt.settings.domain.ports.SettingsRepositoryPort;
 import lombok.RequiredArgsConstructor;

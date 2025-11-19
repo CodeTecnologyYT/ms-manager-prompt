@@ -8,7 +8,6 @@ import com.kaust.ms.manager.prompt.chat.domain.models.requests.ModelRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.SearchPromptRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatResponse;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
-import com.kaust.ms.manager.prompt.report.application.IGeneratePDFUseCase;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
 import com.kaust.ms.manager.prompt.shared.models.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
