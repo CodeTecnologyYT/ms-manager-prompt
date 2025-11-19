@@ -52,7 +52,11 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     @Override
     public Mono<SettingsDocument> findByUserIdToDocument(final String userId) {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_SETTINGS_NOT_FOUND, HttpStatus.NOT_FOUND.value())));
+                .switchIfEmpty(Mono.just(SettingsDocument.builder()
+                        .model(Model.AUTO)
+                        .quantityCreativity(1)
+                        .userId(userId)
+                        .build()));
     }
 
 

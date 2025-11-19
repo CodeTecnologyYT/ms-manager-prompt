@@ -5,6 +5,7 @@ import com.kaust.ms.manager.prompt.chat.application.IProcessChatMessageStreamUse
 import com.kaust.ms.manager.prompt.chat.application.ISaveMessageUseCase;
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
+import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatMessageResponse;
 import com.kaust.ms.manager.prompt.chat.domain.ports.ChatRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.HistoryActionRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.RAGChatConsumerApiPort;
@@ -61,7 +62,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
      * @inheritDoc.
      */
     @Override
-    public Flux<String> execute(final String userId, final MessageRequest messageRequest) {
+    public Flux<ChatMessageResponse> execute(final String userId, final MessageRequest messageRequest) {
         final var fullResponse = new StringBuilder();
         var usageRef = new AtomicReference<Usage>();
 
@@ -76,30 +77,18 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                 ).flatMapMany(biomedicalResponse ->
                                         saveMessageUseCase.handle(userId, Role.USER, messageRequest, EMPTY_ENTITY_LIST)
                                                 .thenMany(
-                                                        generatePromptUseCase.handle(messageRequest.getContent())
+                                                        generatePromptUseCase.handle(biomedicalResponse.getAnswer())
                                                                 .doOnNext(chatResponse -> {
                                                                     if (!(chatResponse.getMetadata().getUsage() instanceof EmptyUsage)) {
                                                                         usageRef.set(chatResponse.getMetadata().getUsage());
                                                                     }
                                                                 })
                                                                 .filter(response -> Objects.nonNull(response.getResult()))
-                                                                .mapNotNull(response -> response.getResult().getOutput().getText())
-                                                                .concatWith(Flux.just("\n"))
-                                                                .scan(new StringBuilder(), StringBuilder::append)
-                                                                .filter(sb -> sb.toString().contains("\n"))
-                                                                .map(sb -> {
-                                                                    final var sentence = sb.toString();
-                                                                    sb.setLength(0);
-                                                                    return sentence;
-                                                                })
-                                                                .flatMap(sentence -> {
-                                                                    final var wordSeparate = Arrays.stream(sentence.toString().split("(?<= )|(?<=\\n)"))
-                                                                            .map(s -> s.endsWith(" ") ? s : s + " ");
-                                                                    return Flux.fromStream(wordSeparate);
-                                                                })
-                                                                .filter(Objects::nonNull)
+                                                                .filter(response -> Objects.nonNull(response.getResult().getOutput()))
+                                                                .filter(response -> Objects.nonNull(response.getResult().getOutput().getText()))
+                                                                .map(chatResponse -> new ChatMessageResponse(chatResponse.getResult().getOutput().getText()))
                                                                 .doOnNext(fullResponse::append)
-                                                                .doOnComplete(() -> messageRequest.setContent(fullResponse.toString().trim()))
+                                                                .doOnComplete(() -> messageRequest.setContent(fullResponse.toString()))
                                                                 // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
                                                                 .concatWith(
                                                                         Mono.defer(() ->
@@ -119,7 +108,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                                                                 )
                                                                                         )
                                                                                         // devolvemos un Mono<Void> → convertimos a Flux<String> vacío explícito
-                                                                                        .then(Mono.<String>empty())
+                                                                                        .then(Mono.<ChatMessageResponse>empty())
                                                                         ).flux()
                                                                 )
                                                 )

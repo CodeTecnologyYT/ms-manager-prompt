@@ -22,7 +22,6 @@ public class ModelGlobalRequest {
     @Schema(description = "model",requiredMode = Schema.RequiredMode.REQUIRED)
     private String model;
     /** quantityCreativity. */
-    @NotEmpty(message = "La cantidad de creatividad no puede estar vacia")
     @Schema(description = "quantityCreativity",requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer quantityCreativity;
 
