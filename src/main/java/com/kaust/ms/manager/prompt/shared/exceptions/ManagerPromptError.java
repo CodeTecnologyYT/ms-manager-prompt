@@ -54,7 +54,11 @@ public enum ManagerPromptError implements Error {
     /**
      * ERROR_FOLDER_NOT_FOUND.
      */
-    ERROR_FOLDER_NOT_FOUND("480", "El folder no fue encontrado");
+    ERROR_FOLDER_NOT_FOUND("480", "El folder no fue encontrado"),
+    /**
+     * ERROR_API_BIOMEDICAL_CONNEXION.
+     */
+    ERROR_API_BIOMEDICAL_CONNEXION("490", "El api esta intermitente intentar nuevamente");;
 
     /**
      * code.
