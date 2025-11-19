@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,5 +14,21 @@ public class BiomedicalResponse {
 
     /** answer. */
     private String answer;
+    /** entities. */
+    private List<Entity> entities;
 
+    /**
+     * Entity.
+     */
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Entity {
+        /** id. */
+        private String id;
+    }
 }
+
+
+

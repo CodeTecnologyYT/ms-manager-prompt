@@ -8,7 +8,9 @@ import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.ports.ChatRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.HistoryActionRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.RAGChatConsumerApiPort;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.HistoryActionsDocument;
+import com.kaust.ms.manager.prompt.settings.application.IGetModelGlobalByUserIdUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.chat.metadata.Usage;
@@ -44,6 +46,16 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
      * historyActionRepositoryPort.
      */
     private final HistoryActionRepositoryPort historyActionRepositoryPort;
+    /**
+     * ragChatConsumerApiPort.
+     */
+    private final RAGChatConsumerApiPort ragChatConsumerApiPort;
+    /**
+     * iGetModelsUseCase.
+     */
+    private final IGetModelGlobalByUserIdUseCase iGetModelGlobalByUserIdUseCase;
+
+    private final static List<BiomedicalResponse.Entity> EMPTY_ENTITY_LIST = List.of();
 
     /**
      * @inheritDoc.
@@ -55,55 +67,61 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
 
         return chatRepositoryPort.findById(messageRequest.getChatId(), userId)
                 .flatMapMany(chatDocument ->
-                        saveMessageUseCase.handle(userId, Role.USER, messageRequest)
-                                .thenMany(
-                                        generatePromptUseCase.handle(messageRequest,
-                                                        userId,
-                                                        chatDocument.getModel().getName(),
-                                                        chatDocument.getQuantityCreativity())
-                                                .doOnNext(chatResponse -> {
-                                                    if (!(chatResponse.getMetadata().getUsage() instanceof EmptyUsage)) {
-                                                        usageRef.set(chatResponse.getMetadata().getUsage());
-                                                    }
-                                                })
-                                                .filter(response -> Objects.nonNull(response.getResult()))
-                                                .mapNotNull(response -> response.getResult().getOutput().getText())
-                                                .scan(new StringBuilder(), StringBuilder::append)
-                                                .filter(sb ->  sb.toString().contains("\n"))
-                                                .map(sb -> {
-                                                    final var sentence = sb.toString();
-                                                    sb.setLength(0);
-                                                    return sentence;
-                                                })
-                                                .flatMap(sentence -> {
-                                                    final var wordSeparate = Arrays.stream(sentence.toString().split("(?<= )|(?<=\\n)"))
-                                                            .map(s -> s.endsWith(" ") ? s : s + " ");
-                                                    return Flux.fromStream(wordSeparate);
-                                                })
-                                                .filter(Objects::nonNull)
-                                                .doOnNext(fullResponse::append)
-                                                .doOnComplete(() -> messageRequest.setContent(fullResponse.toString().trim()))
-                                                // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
-                                                .concatWith(
-                                                        Mono.defer(() ->
-                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest)
-                                                                        .flatMap(message ->
-                                                                                historyActionRepositoryPort.save(
-                                                                                        userId,
-                                                                                        message.getId(),
-                                                                                        message.getChatId(),
-                                                                                        chatDocument.getFolderId(),
-                                                                                        HistoryActionsDocument.ACTION.TOKEN,
-                                                                                        chatDocument.getModel().getName(),
-                                                                                        chatDocument.getQuantityCreativity(),
-                                                                                        Optional.ofNullable(usageRef.get())
-                                                                                                .map(Usage::getTotalTokens)
-                                                                                                .orElse(0)
-                                                                                )
-                                                                        )
-                                                                        // devolvemos un Mono<Void> → convertimos a Flux<String> vacío explícito
-                                                                        .then(Mono.<String>empty())
-                                                        ).flux()
+                        iGetModelGlobalByUserIdUseCase.handle(userId)
+                                .flatMap(model -> {
+                                            final var temperature = Objects.nonNull(chatDocument.getQuantityCreativity())
+                                                    ? chatDocument.getQuantityCreativity() : model.getQuantityCreativity();
+                                            return ragChatConsumerApiPort.response(messageRequest.getContent(), temperature);
+                                        }
+                                ).flatMapMany(biomedicalResponse ->
+                                        saveMessageUseCase.handle(userId, Role.USER, messageRequest, EMPTY_ENTITY_LIST)
+                                                .thenMany(
+                                                        generatePromptUseCase.handle(messageRequest.getContent())
+                                                                .doOnNext(chatResponse -> {
+                                                                    if (!(chatResponse.getMetadata().getUsage() instanceof EmptyUsage)) {
+                                                                        usageRef.set(chatResponse.getMetadata().getUsage());
+                                                                    }
+                                                                })
+                                                                .filter(response -> Objects.nonNull(response.getResult()))
+                                                                .mapNotNull(response -> response.getResult().getOutput().getText())
+                                                                .concatWith(Flux.just("\n"))
+                                                                .scan(new StringBuilder(), StringBuilder::append)
+                                                                .filter(sb -> sb.toString().contains("\n"))
+                                                                .map(sb -> {
+                                                                    final var sentence = sb.toString();
+                                                                    sb.setLength(0);
+                                                                    return sentence;
+                                                                })
+                                                                .flatMap(sentence -> {
+                                                                    final var wordSeparate = Arrays.stream(sentence.toString().split("(?<= )|(?<=\\n)"))
+                                                                            .map(s -> s.endsWith(" ") ? s : s + " ");
+                                                                    return Flux.fromStream(wordSeparate);
+                                                                })
+                                                                .filter(Objects::nonNull)
+                                                                .doOnNext(fullResponse::append)
+                                                                .doOnComplete(() -> messageRequest.setContent(fullResponse.toString().trim()))
+                                                                // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
+                                                                .concatWith(
+                                                                        Mono.defer(() ->
+                                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, biomedicalResponse.getEntities())
+                                                                                        .flatMap(message ->
+                                                                                                historyActionRepositoryPort.save(
+                                                                                                        userId,
+                                                                                                        message.getId(),
+                                                                                                        message.getChatId(),
+                                                                                                        chatDocument.getFolderId(),
+                                                                                                        HistoryActionsDocument.ACTION.TOKEN,
+                                                                                                        chatDocument.getModel().getName(),
+                                                                                                        chatDocument.getQuantityCreativity(),
+                                                                                                        Optional.ofNullable(usageRef.get())
+                                                                                                                .map(Usage::getTotalTokens)
+                                                                                                                .orElse(0)
+                                                                                                )
+                                                                                        )
+                                                                                        // devolvemos un Mono<Void> → convertimos a Flux<String> vacío explícito
+                                                                                        .then(Mono.<String>empty())
+                                                                        ).flux()
+                                                                )
                                                 )
                                 )
                 );

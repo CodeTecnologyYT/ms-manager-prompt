@@ -39,22 +39,18 @@ public class ReactiveRagChatAdapter implements ReactiveRagChatPort {
     /**
      * Get prompt from RAG API.
      *
-     * @param context  {@link String}
+     * @param context {@link String}
      * @return {@link String}
      */
     private static String prompt(final String context) {
         return """
-                the response must be of same the context not agree text additional,it must be in format markdown
+                the response must be of same the context not agree text additional,
+                add lines break of finish response
                 Context: %s""".formatted(context);
     }
 
     private static SystemMessage systemMessage() {
         return new SystemMessage("""
-                You must NEVER split words into separate lines.
-                You must NEVER output one token per line.
-                Always output full sentences and full paragraphs as normal Markdown.
-                All Markdown must be compact and continuous, never fragmented.
-                NEVER insert random line breaks between words.
                 """);
     }
 

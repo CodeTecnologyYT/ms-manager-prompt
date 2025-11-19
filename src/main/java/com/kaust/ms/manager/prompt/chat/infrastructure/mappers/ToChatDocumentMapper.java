@@ -21,7 +21,7 @@ public interface ToChatDocumentMapper {
      */
     @Mapping(target = "title", source = "chatRequest.content")
     @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "model", source = "model.model")
+    @Mapping(target = "model", source = "model.model", qualifiedByName = "toModel")
     @Mapping(target = "quantityCreativity", source = "model.quantityCreativity")
     @Mapping(target = "state", expression = "java(ChatDocument.State.ACTIVE)")
     @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
