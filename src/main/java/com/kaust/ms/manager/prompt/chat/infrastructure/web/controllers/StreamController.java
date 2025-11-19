@@ -3,6 +3,7 @@ package com.kaust.ms.manager.prompt.chat.infrastructure.web.controllers;
 import com.kaust.ms.manager.prompt.auth.domain.models.UserData;
 import com.kaust.ms.manager.prompt.chat.application.IProcessChatMessageStreamUseCase;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
+import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatMessageResponse;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,7 +44,7 @@ public class StreamController {
     @ApiResponse(responseCode = "200", description = "Success response stream of chat messages.")
     @ApiResponse(responseCode = "500", description = "Unexpected error.",
             content = @Content(schema = @Schema(hidden = true)))
-    public Flux<String> processChatMessageStream(@CurrentUser UserData userData, @Valid @RequestBody Mono<MessageRequest> messageRequest) {
+    public Flux<ChatMessageResponse> processChatMessageStream(@CurrentUser UserData userData, @Valid @RequestBody Mono<MessageRequest> messageRequest) {
         return messageRequest.flatMapMany(request ->
                         iProcessChatMessageStreamUseCase.execute(userData.getUid(), request));
     }
