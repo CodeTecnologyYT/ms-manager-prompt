@@ -3,6 +3,7 @@ package com.kaust.ms.manager.prompt.chat.domain.ports;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.ChatRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.ChatDocument;
+import com.kaust.ms.manager.prompt.settings.domain.models.response.ModelGlobalResponse;
 import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,11 +13,20 @@ public interface ChatRepositoryPort {
     /**
      * Save a message.
      *
+     * @param userId      {@link String}
      * @param chatRequest {@link ChatRequest}
+     * @param model       {@link ModelGlobalResponse}
      * @return mono {@link ChatResponse}
      */
-    Mono<ChatResponse> save(String userId, ChatRequest chatRequest);
+    Mono<ChatResponse> save(String userId, ChatRequest chatRequest, ModelGlobalResponse model);
 
+    /**
+     * Find chat by id and user id.
+     *
+     * @param chatId {@link String}
+     * @param userId {@link String}
+     * @return mono {@link ChatResponse}
+     */
     Mono<ChatResponse> findByIdAndByUserId(final String chatId, final String userId);
 
     /**
@@ -99,9 +109,9 @@ public interface ChatRepositoryPort {
     /**
      * Update model and quantity creative.
      *
-     * @param model {@link String}
+     * @param model            {@link String}
      * @param quantityCreative {@link Integer}
-     * @param chatDocument {@link ChatDocument}
+     * @param chatDocument     {@link ChatDocument}
      * @return {@link ChatResponse}
      */
     Mono<ChatResponse> updateModelAndQuantityCreative(final String model, final Integer quantityCreative,

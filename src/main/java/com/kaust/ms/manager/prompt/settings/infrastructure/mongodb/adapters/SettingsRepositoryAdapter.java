@@ -1,5 +1,6 @@
 package com.kaust.ms.manager.prompt.settings.infrastructure.mongodb.adapters;
 
+import com.kaust.ms.manager.prompt.settings.domain.enums.Model;
 import com.kaust.ms.manager.prompt.settings.domain.models.request.ModelGlobalRequest;
 import com.kaust.ms.manager.prompt.settings.domain.models.response.ModelGlobalResponse;
 import com.kaust.ms.manager.prompt.settings.domain.ports.SettingsRepositoryPort;
@@ -37,7 +38,11 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
     @Override
     public Mono<ModelGlobalResponse> findByUserId(final String userId) {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_SETTINGS_NOT_FOUND, HttpStatus.NOT_FOUND.value())))
+                .switchIfEmpty(Mono.just(SettingsDocument.builder()
+                                .model(Model.AUTO)
+                                .quantityCreativity(1)
+                                .userId(userId)
+                        .build()))
                 .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse);
     }
 

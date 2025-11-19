@@ -57,6 +57,7 @@ dependencies {
 
     // Library of report
     implementation 'net.sf.jasperreports:jasperreports-pdf:7.0.3'
+    implementation 'com.vladsch.flexmark:flexmark-all:0.64.8'
 
     // Libraries documentation
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'

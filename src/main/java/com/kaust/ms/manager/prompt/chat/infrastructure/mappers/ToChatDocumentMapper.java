@@ -3,6 +3,7 @@ package com.kaust.ms.manager.prompt.chat.infrastructure.mappers;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.ChatRequest;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.ChatDocument;
 import com.kaust.ms.manager.prompt.settings.domain.enums.Model;
+import com.kaust.ms.manager.prompt.settings.domain.models.response.ModelGlobalResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -20,11 +21,11 @@ public interface ToChatDocumentMapper {
      */
     @Mapping(target = "title", source = "chatRequest.content")
     @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "model", expression = "java(Model.AUTO)")
-    @Mapping(target = "quantityCreativity", constant = "1")
+    @Mapping(target = "model", source = "model.model")
+    @Mapping(target = "quantityCreativity", source = "model.quantityCreativity")
     @Mapping(target = "state", expression = "java(ChatDocument.State.ACTIVE)")
     @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
-    ChatDocument transformMessageRequestToChatDocument(String userId, ChatRequest chatRequest);
+    ChatDocument transformMessageRequestToChatDocument(String userId, ChatRequest chatRequest, ModelGlobalResponse model);
 
     /**
      * Transform a chat document and folder to a chat document.
