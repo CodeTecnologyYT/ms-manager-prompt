@@ -29,7 +29,7 @@ public class ChatDocument {
     /** model. */
     private Model model;
     /** quantityCreativity. */
-    private Integer quantityCreativity;
+    private Double quantityCreativity;
     /** state. */
     private State state;
     /** createdAt. */

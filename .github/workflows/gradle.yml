@@ -10,8 +10,6 @@ name: Deploy JAR to Google VM
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   # 🧱 Job 1: Build the JAR

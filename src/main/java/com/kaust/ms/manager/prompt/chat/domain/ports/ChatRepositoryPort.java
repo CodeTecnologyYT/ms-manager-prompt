@@ -114,7 +114,7 @@ public interface ChatRepositoryPort {
      * @param chatDocument     {@link ChatDocument}
      * @return {@link ChatResponse}
      */
-    Mono<ChatResponse> updateModelAndQuantityCreative(final String model, final Integer quantityCreative,
+    Mono<ChatResponse> updateModelAndQuantityCreative(final String model, final Double quantityCreative,
                                                       final ChatDocument chatDocument);
 
 }

@@ -9,9 +9,9 @@ public interface RAGChatConsumerApiPort {
      * Response to a question.
      *
      * @param question    {@link String}
-     * @param temperature {@link Integer}
+     * @param temperature {@link Double}
      * @return {@link BiomedicalResponse}
      */
-    Mono<BiomedicalResponse> response(String question, Integer temperature);
+    Mono<BiomedicalResponse> response(String question, Double temperature);
 
 }

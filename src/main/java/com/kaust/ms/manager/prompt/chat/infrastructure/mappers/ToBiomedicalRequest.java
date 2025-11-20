@@ -9,6 +9,6 @@ public interface ToBiomedicalRequest {
 
     @Mapping(target = "query", source = "text")
     @Mapping(target = "temperature", source = "temperature")
-    BiomedicalRequest transform(String text, Integer temperature);
+    BiomedicalRequest transform(String text, Double temperature);
 
 }

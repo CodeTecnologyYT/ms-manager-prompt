@@ -20,7 +20,7 @@ public class ChatResponse {
     /** model. */
     private String model;
     /** quantityCreativity. */
-    private Integer quantityCreativity;
+    private Double quantityCreativity;
     /** createdAt. */
     private LocalDateTime createdAt;
     /** updatedAt. */

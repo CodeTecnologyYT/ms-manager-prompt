@@ -24,7 +24,7 @@ public interface HistoryActionRepositoryPort {
                                       final String folderId,
                                       final HistoryActionsDocument.ACTION action,
                                       final String model,
-                                      final Integer quantityCreativity,
+                                      final Double quantityCreativity,
                                       final Integer numberOfTokens);
 
 }

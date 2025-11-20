@@ -58,7 +58,11 @@ public enum ManagerPromptError implements Error {
     /**
      * ERROR_API_BIOMEDICAL_CONNEXION.
      */
-    ERROR_API_BIOMEDICAL_CONNEXION("490", "El api esta intermitente intentar nuevamente");;
+    ERROR_API_BIOMEDICAL_CONNEXION("490", "El api esta intermitente intentar nuevamente"),
+    /**
+     * ERROR_MESSAGE_NOT_FOUND.
+     */
+    ERROR_MESSAGE_NOT_FOUND("491", "El mensaje no fue encontrado");
 
     /**
      * code.
