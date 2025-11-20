@@ -62,7 +62,7 @@ public interface ToChatDocumentMapper {
     @Mapping(target = "folderId", source = "chatDocument.folderId")
     @Mapping(target = "createdAt", source = "chatDocument.createdAt")
     @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
-    ChatDocument transformChatDocumentToChatDocument(String model, Integer quantityCreative,ChatDocument chatDocument);
+    ChatDocument transformChatDocumentToChatDocument(String model, Double quantityCreative,ChatDocument chatDocument);
 
     /**
      * Transform a model to a string.

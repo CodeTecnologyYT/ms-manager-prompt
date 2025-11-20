@@ -24,7 +24,7 @@ public interface ToHistoryActionMapper {
                                                    String folderId,
                                                    HistoryActionsDocument.ACTION action,
                                                    String model,
-                                                   Integer quantityCreativity,
+                                                   Double quantityCreativity,
                                                    Integer numberOfTokens);
 
 }

@@ -23,6 +23,6 @@ public class ModelGlobalRequest {
     private String model;
     /** quantityCreativity. */
     @Schema(description = "quantityCreativity",requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer quantityCreativity;
+    private Double quantityCreativity;
 
 }

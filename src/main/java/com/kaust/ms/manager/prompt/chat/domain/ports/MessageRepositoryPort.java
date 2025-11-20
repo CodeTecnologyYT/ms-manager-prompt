@@ -46,6 +46,15 @@ public interface MessageRepositoryPort {
     Flux<MessageResponse> findByChatId(final String userId, final String chatId);
 
     /**
+     * Find message by id.
+     *
+     * @param userId {@link String}
+     * @param messageId {@link String}
+     * @return mono {@link MessageResponse}
+     */
+    Mono<MessageResponse> findById(final String userId, final String messageId);
+
+    /**
      * Count messages by chat id and user id.
      *
      * @param chatId {@link String}

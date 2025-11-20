@@ -28,7 +28,7 @@ public class RAGChatConsumerAdapter implements RAGChatConsumerApiPort {
      * @inheritDoc.
      */
     @Override
-    public Mono<BiomedicalResponse> response(final String question, final Integer temperature) {
+    public Mono<BiomedicalResponse> response(final String question, final Double temperature) {
         final var request = toBiomedicalRequest.transform(question, temperature);
         return webClient.post()
                 .uri(urlBase + "/chat")

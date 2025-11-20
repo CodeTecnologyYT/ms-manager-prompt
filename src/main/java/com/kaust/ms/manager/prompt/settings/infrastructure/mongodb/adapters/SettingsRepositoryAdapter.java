@@ -40,7 +40,7 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
                 .switchIfEmpty(Mono.just(SettingsDocument.builder()
                                 .model(Model.AUTO)
-                                .quantityCreativity(1)
+                                .quantityCreativity(1.0)
                                 .userId(userId)
                         .build()))
                 .map(toSettingsResponseMapper::transformCustomizeDocumentToCustomizeResponse);
@@ -54,7 +54,7 @@ public class SettingsRepositoryAdapter implements SettingsRepositoryPort {
         return customRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
                 .switchIfEmpty(Mono.just(SettingsDocument.builder()
                         .model(Model.AUTO)
-                        .quantityCreativity(1)
+                        .quantityCreativity(1.0)
                         .userId(userId)
                         .build()));
     }

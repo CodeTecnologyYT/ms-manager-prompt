@@ -9,8 +9,11 @@ import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageDocument
 import com.kaust.ms.manager.prompt.chat.infrastructure.mappers.ToMessageResponseMapper;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.repositories.MessageRepository;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
+import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,7 +45,7 @@ public class MessageRepositoryAdapter implements MessageRepositoryPort {
                                              final MessageRequest message,
                                              final List<BiomedicalResponse.Entity> entities) {
         return messageRepository.save(toMessageDocumentMapper
-                        .transformMessageRequestToMessageDocument(role, userId, message));
+                .transformMessageRequestToMessageDocument(role, userId, message));
     }
 
     /**
@@ -61,6 +64,17 @@ public class MessageRepositoryAdapter implements MessageRepositoryPort {
     public Flux<MessageResponse> findByChatId(final String userId, final String chatId) {
         return messageRepository.findByChatIdAndUserId(chatId, userId)
                 .map(toMessageResponseMapper::transformMessageToMessageResponse);
+    }
+
+    /**
+     * @inheritDoc.
+     */
+    @Override
+    public Mono<MessageResponse> findById(final String userId, final String messageId) {
+        return messageRepository.findByIdAndUserId(messageId, userId)
+                .map(toMessageResponseMapper::transformMessageToMessageResponse)
+                .switchIfEmpty(Mono.error(new ManagerPromptException(ManagerPromptError.ERROR_MESSAGE_NOT_FOUND,
+                        HttpStatus.NOT_FOUND.value())));
     }
 
     /**

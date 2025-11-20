@@ -144,7 +144,7 @@ public class ChatRepositoryAdapter implements ChatRepositoryPort {
      * @inheritDoc.
      */
     @Override
-    public Mono<ChatResponse> updateModelAndQuantityCreative(final String model, final Integer quantityCreative,
+    public Mono<ChatResponse> updateModelAndQuantityCreative(final String model, final Double quantityCreative,
                                                              final ChatDocument chatDocument) {
         return chatRepository.save(toChatDocumentMapper.transformChatDocumentToChatDocument(model,
                         quantityCreative, chatDocument))

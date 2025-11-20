@@ -18,7 +18,7 @@ public interface ToSettingsDocumentMapper {
      */
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "model", expression = "java(Model.AUTO)")
-    @Mapping(target = "quantityCreativity", constant = "1")
+    @Mapping(target = "quantityCreativity", constant = "1.0")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     SettingsDocument transformToStartedSettings(String userId);
 

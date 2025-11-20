@@ -16,6 +16,6 @@ public class ModelGlobalResponse {
     /** model. */
     private String model;
     /** quantityCreativity. */
-    private Integer quantityCreativity;
+    private Double quantityCreativity;
 
 }

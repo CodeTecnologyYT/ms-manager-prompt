@@ -31,7 +31,7 @@ public class HistoryActionRepositoryAdapter implements HistoryActionRepositoryPo
                                              final String folderId,
                                              final HistoryActionsDocument.ACTION action,
                                              final String model,
-                                             final Integer quantityCreativity,
+                                             final Double quantityCreativity,
                                              final Integer numberOfTokens) {
         return historyActionRepository.save(toHistoryActionMapper.toHistoryActionDocument(userId, messageId,
                 chatId, folderId, action, model, quantityCreativity, numberOfTokens));

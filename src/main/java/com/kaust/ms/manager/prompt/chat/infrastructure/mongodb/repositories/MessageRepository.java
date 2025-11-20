@@ -39,4 +39,13 @@ public interface MessageRepository extends ReactiveMongoRepository<MessageDocume
      */
     Mono<Long> countByChatIdAndUserId(String chatId, String userId);
 
+    /**
+     * Find message by id and user id.
+     *
+     * @param id {@link String}
+     * @param userId {@link String}
+     * @return {@link Mono}
+     */
+    Mono<MessageDocument> findByIdAndUserId(String id, String userId);
+
 }

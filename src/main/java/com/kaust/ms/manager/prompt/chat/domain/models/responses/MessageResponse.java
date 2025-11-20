@@ -13,6 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MessageResponse {
 
+    /** id. */
+    private String id;
     /** content. */
     private String content;
     /** role. */

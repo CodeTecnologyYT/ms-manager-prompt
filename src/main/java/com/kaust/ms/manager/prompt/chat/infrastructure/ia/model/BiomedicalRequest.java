@@ -14,6 +14,6 @@ public class BiomedicalRequest {
     /** query to be executed. */
     private String query;
     /** temperature in Celsius. */
-    private Integer temperature;
+    private Double temperature;
 
 }

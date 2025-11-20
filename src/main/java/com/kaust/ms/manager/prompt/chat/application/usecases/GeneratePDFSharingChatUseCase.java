@@ -26,17 +26,13 @@ public class GeneratePDFSharingChatUseCase implements IGeneratePDFSharingChatUse
     private final GetChatByIdUseCase getChatByIdUseCase;
 
     /**
-     * Generate a PDF sharing chat.
-     *
-     * @param chatId {@link String}
-     * @param userId {@link String}
-     * @return mono {@link Byte}
+     * @inheritDoc.
      */
     @Override
     public Mono<byte[]> handle(final String chatId, final String userId) {
         return getChatByIdUseCase.handle(chatId, userId)
                 .flatMap(chat -> messageRepositoryPort.findByChatId(userId, chat.getId())
-                        // transform
+                        // transform Markdown to HTML
                         .map(message -> {
                             final var parser = Parser.builder().build();
                             final var renderer = HtmlRenderer.builder().build();
