@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -109,7 +110,7 @@ public class ChatController {
                                                                      @PathVariable("chatId") String chatId,
                                                                      @RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "10") int size) {
-        final var pageable = PageRequest.of(page, size);
+        final var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return iGetMessageAllByChatIdUseCase.handle(userData.getUid(), chatId, pageable);
     }
 

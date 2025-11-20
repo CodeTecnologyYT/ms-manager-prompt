@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BiomedicalResponse {
+public class BiomedicalChatResponse {
 
     /** answer. */
     private String answer;

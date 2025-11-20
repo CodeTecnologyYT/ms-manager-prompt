@@ -1,7 +1,7 @@
 package com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents;
 
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
-import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +29,7 @@ public class MessageDocument {
     /** content. */
     private String content;
     /** entities. */
-    private List<BiomedicalResponse.Entity> entities;
+    private List<BiomedicalChatResponse.Entity> entities;
     /** role. */
     private Role role;
     /** createdAt. */

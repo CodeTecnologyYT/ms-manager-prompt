@@ -3,7 +3,7 @@ package com.kaust.ms.manager.prompt.chat.domain.ports;
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
-import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
@@ -18,13 +18,13 @@ public interface MessageRepositoryPort {
      *
      * @param role {@link Role}
      * @param message {@link MessageRequest}
-     * @param entities {@link BiomedicalResponse.Entity}
+     * @param chatResponse {@link BiomedicalChatResponse}
      * @return {@link MessageDocument}
      */
     Mono<MessageDocument> saveMessage(String userId,
                                       Role role,
                                       MessageRequest message,
-                                      List<BiomedicalResponse.Entity> entities);
+                                      BiomedicalChatResponse chatResponse);
 
     /**
      * Find messages by user id.
@@ -52,7 +52,16 @@ public interface MessageRepositoryPort {
      * @param messageId {@link String}
      * @return mono {@link MessageResponse}
      */
-    Mono<MessageResponse> findById(final String userId, final String messageId);
+    Mono<MessageResponse> findById(String userId, String messageId);
+
+    /**
+     * Find message by id to document.
+     *
+     * @param userId {@link String}
+     * @param messageId {@link String}
+     * @return {@link MessageDocument}
+     */
+    Mono<MessageDocument> findByIdToDocument(String userId, String messageId);
 
     /**
      * Count messages by chat id and user id.

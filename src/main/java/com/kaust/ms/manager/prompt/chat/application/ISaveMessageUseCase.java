@@ -2,8 +2,7 @@ package com.kaust.ms.manager.prompt.chat.application;
 
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
-import com.kaust.ms.manager.prompt.chat.domain.models.responses.MessageResponse;
-import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import reactor.core.publisher.Mono;
 
@@ -16,12 +15,12 @@ public interface ISaveMessageUseCase {
      *
      * @param userUid {@link String}
      * @param messageRequest {@link MessageRequest}
-     * @param entities {@link BiomedicalResponse.Entity}
+     * @param chatResponse {@link BiomedicalChatResponse}
      * @return {@link MessageDocument}
      */
     Mono<MessageDocument> handle(String userUid,
                                  Role role,
                                  MessageRequest messageRequest,
-                                 List<BiomedicalResponse.Entity> entities);
+                                 BiomedicalChatResponse chatResponse);
 
 }

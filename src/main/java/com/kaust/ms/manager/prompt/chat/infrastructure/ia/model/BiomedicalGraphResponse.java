@@ -7,13 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class BiomedicalRequest {
+@NoArgsConstructor
+public class BiomedicalGraphResponse {
 
-    /** query to be executed. */
-    private String query;
-    /** temperature in Celsius. */
-    private Double temperature;
+    /** html. */
+    private String html;
 
 }
