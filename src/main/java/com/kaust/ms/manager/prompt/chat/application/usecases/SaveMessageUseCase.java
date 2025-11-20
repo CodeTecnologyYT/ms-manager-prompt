@@ -4,7 +4,7 @@ import com.kaust.ms.manager.prompt.chat.application.ISaveMessageUseCase;
 import com.kaust.ms.manager.prompt.chat.domain.enums.Role;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MessageRequest;
 import com.kaust.ms.manager.prompt.chat.domain.ports.MessageRepositoryPort;
-import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.MessageDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,8 @@ public class SaveMessageUseCase implements ISaveMessageUseCase {
      */
     @Override
     public Mono<MessageDocument> handle(final String userUid, final Role role,
-                                        final MessageRequest messageRequest, final List<BiomedicalResponse.Entity> idEntities) {
-        return messageRepositoryPort.saveMessage( userUid, role, messageRequest, idEntities);
+                                        final MessageRequest messageRequest, final BiomedicalChatResponse chatResponse) {
+        return messageRepositoryPort.saveMessage( userUid, role, messageRequest, chatResponse);
     }
 
 }

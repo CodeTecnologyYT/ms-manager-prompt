@@ -9,7 +9,7 @@ import com.kaust.ms.manager.prompt.chat.domain.models.responses.ChatMessageRespo
 import com.kaust.ms.manager.prompt.chat.domain.ports.ChatRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.HistoryActionRepositoryPort;
 import com.kaust.ms.manager.prompt.chat.domain.ports.RAGChatConsumerApiPort;
-import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalResponse;
+import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.HistoryActionsDocument;
 import com.kaust.ms.manager.prompt.settings.application.IGetModelGlobalByUserIdUseCase;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +53,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
      */
     private final IGetModelGlobalByUserIdUseCase iGetModelGlobalByUserIdUseCase;
 
-    private final static List<BiomedicalResponse.Entity> EMPTY_ENTITY_LIST = List.of();
+    private final static BiomedicalChatResponse EMPTY_ENTITY = null;
 
     /**
      * @inheritDoc.
@@ -72,10 +69,10 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                 .flatMap(model -> {
                                             final var temperature = Objects.nonNull(chatDocument.getQuantityCreativity())
                                                     ? chatDocument.getQuantityCreativity() : model.getQuantityCreativity();
-                                            return ragChatConsumerApiPort.response(messageRequest.getContent(), temperature);
+                                            return ragChatConsumerApiPort.responseChat(messageRequest.getContent(), temperature);
                                         }
                                 ).flatMapMany(biomedicalResponse ->
-                                        saveMessageUseCase.handle(userId, Role.USER, messageRequest, EMPTY_ENTITY_LIST)
+                                        saveMessageUseCase.handle(userId, Role.USER, messageRequest, EMPTY_ENTITY)
                                                 .thenMany(
                                                         generatePromptUseCase.handle(biomedicalResponse.getAnswer())
                                                                 .doOnNext(chatResponse -> {
@@ -87,12 +84,12 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                                 .filter(response -> Objects.nonNull(response.getResult().getOutput()))
                                                                 .filter(response -> Objects.nonNull(response.getResult().getOutput().getText()))
                                                                 .map(chatResponse -> new ChatMessageResponse(chatResponse.getResult().getOutput().getText()))
-                                                                .doOnNext(fullResponse::append)
+                                                                .doOnNext(response -> fullResponse.append(response.getContent()))
                                                                 .doOnComplete(() -> messageRequest.setContent(fullResponse.toString()))
                                                                 // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
                                                                 .concatWith(
                                                                         Mono.defer(() ->
-                                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, biomedicalResponse.getEntities())
+                                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, biomedicalResponse)
                                                                                         .flatMap(message ->
                                                                                                 historyActionRepositoryPort.save(
                                                                                                         userId,
@@ -114,17 +111,6 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                 )
                                 )
                 );
-    }
-
-    private String normalizeLineBreaks(String text) {
-        return text
-                .replace("\\n", "\n")                 // convertir \n escapado → salto real
-                .replace("\r\n", "\n")                // convertir CRLF → LF
-                .replace("\r", "\n")                  // convertir CR → LF
-                .replace("\u2028", "\n")              // Unicode line separator
-                .replace("\u2029", "\n")              // Unicode paragraph separator
-                .replaceAll("\n{2,}", "\n")           // colapsar múltiple saltos → uno
-                .trim();                              // limpiar bordes
     }
 
 }

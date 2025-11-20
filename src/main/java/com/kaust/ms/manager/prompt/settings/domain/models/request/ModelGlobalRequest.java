@@ -1,6 +1,8 @@
 package com.kaust.ms.manager.prompt.settings.domain.models.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
@@ -23,6 +25,8 @@ public class ModelGlobalRequest {
     private String model;
     /** quantityCreativity. */
     @Schema(description = "quantityCreativity",requiredMode = Schema.RequiredMode.REQUIRED)
+    @DecimalMin(value = "0.0", message = "El valor debe ser mayor o igual a 0")
+    @DecimalMax(value = "2.0", message = "El valor debe ser menor o igual a 2")
     private Double quantityCreativity;
 
 }

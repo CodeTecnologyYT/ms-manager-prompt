@@ -62,7 +62,11 @@ public enum ManagerPromptError implements Error {
     /**
      * ERROR_MESSAGE_NOT_FOUND.
      */
-    ERROR_MESSAGE_NOT_FOUND("491", "El mensaje no fue encontrado");
+    ERROR_MESSAGE_NOT_FOUND("491", "El mensaje no fue encontrado"),
+    /**
+     * ERROR_ENTITIES_NOT_FOUND.
+     */
+    ERROR_ENTITIES_NOT_FOUND("491", "Los entities no fue encontrado");
 
     /**
      * code.
