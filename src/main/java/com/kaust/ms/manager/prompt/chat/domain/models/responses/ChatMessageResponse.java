@@ -13,5 +13,7 @@ public class ChatMessageResponse {
 
     /** content. */
     private String content;
+    /** idMessage. */
+    private String idMessage;
 
 }
