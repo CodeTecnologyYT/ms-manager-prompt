@@ -83,7 +83,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                                 .filter(response -> Objects.nonNull(response.getResult()))
                                                                 .filter(response -> Objects.nonNull(response.getResult().getOutput()))
                                                                 .filter(response -> Objects.nonNull(response.getResult().getOutput().getText()))
-                                                                .map(chatResponse -> new ChatMessageResponse(chatResponse.getResult().getOutput().getText()))
+                                                                .map(chatResponse -> new ChatMessageResponse(chatResponse.getResult().getOutput().getText(), ""))
                                                                 .doOnNext(response -> fullResponse.append(response.getContent()))
                                                                 .doOnComplete(() -> messageRequest.setContent(fullResponse.toString()))
                                                                 // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
@@ -92,20 +92,19 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                                                 saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, biomedicalResponse)
                                                                                         .flatMap(message ->
                                                                                                 historyActionRepositoryPort.save(
-                                                                                                        userId,
-                                                                                                        message.getId(),
-                                                                                                        message.getChatId(),
-                                                                                                        chatDocument.getFolderId(),
-                                                                                                        HistoryActionsDocument.ACTION.TOKEN,
-                                                                                                        chatDocument.getModel().getName(),
-                                                                                                        chatDocument.getQuantityCreativity(),
-                                                                                                        Optional.ofNullable(usageRef.get())
-                                                                                                                .map(Usage::getTotalTokens)
-                                                                                                                .orElse(0)
-                                                                                                )
+                                                                                                                userId,
+                                                                                                                message.getId(),
+                                                                                                                message.getChatId(),
+                                                                                                                chatDocument.getFolderId(),
+                                                                                                                HistoryActionsDocument.ACTION.TOKEN,
+                                                                                                                chatDocument.getModel().getName(),
+                                                                                                                chatDocument.getQuantityCreativity(),
+                                                                                                                Optional.ofNullable(usageRef.get())
+                                                                                                                        .map(Usage::getTotalTokens)
+                                                                                                                        .orElse(0)
+                                                                                                        )
+                                                                                                        .thenReturn(new ChatMessageResponse("", message.getId()))
                                                                                         )
-                                                                                        // devolvemos un Mono<Void> → convertimos a Flux<String> vacío explícito
-                                                                                        .then(Mono.<ChatMessageResponse>empty())
                                                                         ).flux()
                                                                 )
                                                 )
