@@ -43,9 +43,10 @@ public class MessageRepositoryAdapter implements MessageRepositoryPort {
     @Override
     public Mono<MessageDocument> saveMessage(final String userId, final Role role,
                                              final MessageRequest message,
+                                             final String messageUser,
                                              final BiomedicalChatResponse chatResponse) {
         return messageRepository.save(toMessageDocumentMapper
-                .transformMessageRequestToMessageDocument(role, userId, message, chatResponse));
+                .transformMessageRequestToMessageDocument(role, userId, message, chatResponse, messageUser));
     }
 
     /**

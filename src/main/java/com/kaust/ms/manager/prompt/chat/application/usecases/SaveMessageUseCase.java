@@ -26,8 +26,10 @@ public class SaveMessageUseCase implements ISaveMessageUseCase {
      */
     @Override
     public Mono<MessageDocument> handle(final String userUid, final Role role,
-                                        final MessageRequest messageRequest, final BiomedicalChatResponse chatResponse) {
-        return messageRepositoryPort.saveMessage( userUid, role, messageRequest, chatResponse);
+                                        final MessageRequest messageRequest,
+                                        final String messageUser,
+                                        final BiomedicalChatResponse chatResponse) {
+        return messageRepositoryPort.saveMessage( userUid, role, messageRequest, messageUser, chatResponse);
     }
 
 }

@@ -13,6 +13,7 @@ import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalChatRe
 import com.kaust.ms.manager.prompt.chat.infrastructure.mongodb.documents.HistoryActionsDocument;
 import com.kaust.ms.manager.prompt.settings.application.IGetModelGlobalByUserIdUseCase;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.metadata.EmptyUsage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
     public Flux<ChatMessageResponse> execute(final String userId, final MessageRequest messageRequest) {
         final var fullResponse = new StringBuilder();
         var usageRef = new AtomicReference<Usage>();
-
+        final var messageUser = messageRequest.getContent();
         return chatRepositoryPort.findById(messageRequest.getChatId(), userId)
                 .flatMapMany(chatDocument ->
                         iGetModelGlobalByUserIdUseCase.handle(userId)
@@ -72,7 +73,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                             return ragChatConsumerApiPort.responseChat(messageRequest.getContent(), temperature);
                                         }
                                 ).flatMapMany(biomedicalResponse ->
-                                        saveMessageUseCase.handle(userId, Role.USER, messageRequest, EMPTY_ENTITY)
+                                        saveMessageUseCase.handle(userId, Role.USER, messageRequest, StringUtils.EMPTY, EMPTY_ENTITY)
                                                 .thenMany(
                                                         generatePromptUseCase.handle(biomedicalResponse.getAnswer())
                                                                 .doOnNext(chatResponse -> {
@@ -89,7 +90,7 @@ public class ProcessChatMessageStreamUseCase implements IProcessChatMessageStrea
                                                                 // aquí convertimos explícitamente el Mono<Void> final en Flux<String> vacío
                                                                 .concatWith(
                                                                         Mono.defer(() ->
-                                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, biomedicalResponse)
+                                                                                saveMessageUseCase.handle(userId, Role.ASSISTANT, messageRequest, messageUser, biomedicalResponse)
                                                                                         .flatMap(message ->
                                                                                                 historyActionRepositoryPort.save(
                                                                                                                 userId,

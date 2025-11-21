@@ -66,7 +66,9 @@ public enum ManagerPromptError implements Error {
     /**
      * ERROR_ENTITIES_NOT_FOUND.
      */
-    ERROR_ENTITIES_NOT_FOUND("491", "Los entities no fue encontrado");
+    ERROR_ENTITIES_NOT_FOUND("492", "Los entities no fue encontrado"),
+    /** ERROR_GENERATE_MARKDOWN. */
+    ERROR_GENERATE_MARKDOWN("493", "Error al generar el markdown");
 
     /**
      * code.
