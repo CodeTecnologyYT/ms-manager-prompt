@@ -21,6 +21,7 @@ public interface ISaveMessageUseCase {
     Mono<MessageDocument> handle(String userUid,
                                  Role role,
                                  MessageRequest messageRequest,
+                                 String messageUser,
                                  BiomedicalChatResponse chatResponse);
 
 }

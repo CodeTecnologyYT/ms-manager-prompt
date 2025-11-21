@@ -28,8 +28,20 @@ public class MessageDocument {
     private String userId;
     /** content. */
     private String content;
+    /** messageUser. */
+    private String messageUser;
     /** entities. */
     private List<BiomedicalChatResponse.Entity> entities;
+    /** extractedCandidates. */
+    private List<String> extractedCandidates;
+    /** unmatchedCandidates. */
+    private List<String> unmatchedCandidates;
+    /** triplets. */
+    private List<BiomedicalChatResponse.Triplet> triplets;
+    /** chuckPattern. */
+    private BiomedicalChatResponse.ChuckPattern chunkPatterns;
+    /** chucks. */
+    private List<BiomedicalChatResponse.Chunk> chunks;
     /** role. */
     private Role role;
     /** createdAt. */

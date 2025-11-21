@@ -4,6 +4,7 @@ import com.kaust.ms.manager.prompt.auth.domain.models.UserData;
 import com.kaust.ms.manager.prompt.chat.application.*;
 import com.kaust.ms.manager.prompt.chat.domain.models.requests.MailRequest;
 import com.kaust.ms.manager.prompt.chat.domain.models.responses.GraphResponse;
+import com.kaust.ms.manager.prompt.chat.domain.models.responses.MarkdownResponse;
 import com.kaust.ms.manager.prompt.chat.infrastructure.ia.model.BiomedicalGraphResponse;
 import com.kaust.ms.manager.prompt.shared.anotations.current_user.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,12 +24,22 @@ import reactor.core.publisher.Mono;
 @Tag(name = "Message", description = "API Message")
 public class MessageController {
 
-    /** iGeneratePDFSharingMessageUseCase. */
+    /**
+     * iGeneratePDFSharingMessageUseCase.
+     */
     private final IGeneratePDFSharingMessageUseCase iGeneratePDFSharingMessageUseCase;
-    /** iSendMailSharingMessageUseCase. */
+    /**
+     * iSendMailSharingMessageUseCase.
+     */
     private final ISendMailSharingMessageUseCase iSendMailSharingMessageUseCase;
-    /** iGenerateGraphEntitiesUseCase. */
+    /**
+     * iGenerateGraphEntitiesUseCase.
+     */
     private final IGenerateGraphEntitiesUseCase iGenerateGraphEntitiesUseCase;
+    /**
+     * iGenerateContextViewMDUseCase.
+     */
+    private final IGenerateContextViewMDUseCase iGenerateContextViewMDUseCase;
 
     /**
      * Send email sharing chat.
@@ -54,8 +65,8 @@ public class MessageController {
     /**
      * Generate Graph for a message.
      *
-     * @param userData    {@link UserData}
-     * @param messageId   {@link String}
+     * @param userData  {@link UserData}
+     * @param messageId {@link String}
      * @return mono{@link GraphResponse}
      */
     @GetMapping("/{messageId}/graph")
@@ -67,6 +78,24 @@ public class MessageController {
     public Mono<GraphResponse> generateGraphMessage(@CurrentUser UserData userData,
                                                     @PathVariable("messageId") String messageId) {
         return iGenerateGraphEntitiesUseCase.handle(messageId, userData.getUid());
+    }
+
+    /**
+     * Generate Graph for a message.
+     *
+     * @param userData  {@link UserData}
+     * @param messageId {@link String}
+     * @return mono{@link GraphResponse}
+     */
+    @GetMapping("/{messageId}/markdown")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Generate markdown for message", description = "Generate Markdown for message.")
+    @ApiResponse(responseCode = "200", description = "Success generate Markdown for message.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<MarkdownResponse> generateMarkdownContextView(@CurrentUser UserData userData,
+                                                              @PathVariable("messageId") String messageId) {
+        return iGenerateContextViewMDUseCase.handle(userData.getUid(), messageId);
     }
 
 }

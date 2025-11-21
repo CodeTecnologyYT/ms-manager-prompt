@@ -24,6 +24,7 @@ public interface MessageRepositoryPort {
     Mono<MessageDocument> saveMessage(String userId,
                                       Role role,
                                       MessageRequest message,
+                                      String messageUser,
                                       BiomedicalChatResponse chatResponse);
 
     /**

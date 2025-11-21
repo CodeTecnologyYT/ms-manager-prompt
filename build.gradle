@@ -31,6 +31,7 @@ dependencies {
     // Library of webflux and testing
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
@@ -82,7 +83,7 @@ sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
-            includes = ['**/*.properties', '**/*.yml', 'templates/**/*.html', '**/*.xml', "reports/**/*.ttf", "reports/**/*.xml", "reports/**/*.jasper", "reports/**/*.jrxml"]
+            includes = ['**/*.properties', '**/*.yml', 'templates/**/*.md', 'templates/**/*.html', '**/*.xml', "reports/**/*.ttf", "reports/**/*.xml", "reports/**/*.jasper", "reports/**/*.jrxml"]
         }
     }
 }
