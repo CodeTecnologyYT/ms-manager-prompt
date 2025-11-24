@@ -19,6 +19,7 @@ public interface ToChatDocumentMapper {
      * @param chatRequest {@link ChatRequest}
      * @return {@link ChatDocument}
      */
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "title", source = "chatRequest.content")
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "model", source = "model.model", qualifiedByName = "toModel")
