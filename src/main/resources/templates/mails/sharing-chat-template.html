@@ -19,23 +19,19 @@
         <h1> New Notification</h1>
     </div>
     <div class="email-body">
-        <p>Hi, <strong th:text="${userName}">Usuario</strong>,</p>
+        <p>Hello, <strong th:text="${userName}">Usuario</strong>,</p>
 
-        <p th:text="${notificationMessage}">You have a new notification in your chat.</p>
+        <p th:text="${notificationMessage}">The user dadas@gmail.com has shared the following information with you.</p>
 
         <div class="info-box">
             <p><strong>Chat ID:</strong> <span th:text="${chatId}">123456</span></p>
-            <p><strong>Fecha:</strong> <span th:text="${date}">2025-10-22</span></p>
-            <p th:if="${additionalInfo}"><strong>Información adicional:</strong> <span th:text="${additionalInfo}">Info</span></p>
+            <p><strong>Date:</strong> <span th:text="${date}">2025-10-22</span></p>
+            <p th:if="${additionalInfo}"><strong>Information addtional:</strong> <span th:text="${additionalInfo}">Info</span></p>
         </div>
 
         <p style="color: #6c757d; font-size: 14px; margin-top: 30px;">
-            This email was shared by your KAUST Manager Prompt account.
+            This email was shared by your Yotta KAUST Manager Prompt account.
         </p>
-    </div>
-    <div class="email-footer">
-        <p>KAUST Manager Prompt © 2025</p>
-        <p>This is an automated email, please do not reply directly.</p>
     </div>
 </div>
 </body>
