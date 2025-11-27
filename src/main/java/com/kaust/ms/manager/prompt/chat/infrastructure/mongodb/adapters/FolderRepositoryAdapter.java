@@ -48,7 +48,7 @@ public class FolderRepositoryAdapter implements FolderRepositoryPort {
      */
     @Override
     public Flux<FolderResponse> findAllByUserId(final String userId, final Pageable pageable) {
-        return folderRepository.findByUserId(userId, pageable)
+        return folderRepository.findByUserIdAndState(userId, FolderDocument.State.ACTIVE, pageable)
                 .map(toFolderResponseMapper::transformFolderDocumentToFolderResponse);
     }
 
@@ -57,7 +57,7 @@ public class FolderRepositoryAdapter implements FolderRepositoryPort {
      */
     @Override
     public Mono<Long> countByUserId(final String userId) {
-        return folderRepository.countByUserId(userId);
+        return folderRepository.countByUserIdAndState(userId, FolderDocument.State.ACTIVE);
     }
 
     /**
@@ -79,6 +79,16 @@ public class FolderRepositoryAdapter implements FolderRepositoryPort {
                 .transformFolderRequestAndFolderDocumentToFolderDocument(folderDocument, folderRequest);
         return folderRepository.save(folderUpdate)
                 .map(toFolderResponseMapper::transformFolderDocumentToFolderResponse);
+    }
+
+    /**
+     * @inheritDoc.
+     */
+    @Override
+    public Mono<Void> delete(final FolderDocument folderDocument) {
+        folderDocument.setState(FolderDocument.State.DELETE);
+        return folderRepository.save(folderDocument)
+                .thenEmpty(Mono.empty());
     }
 
 }

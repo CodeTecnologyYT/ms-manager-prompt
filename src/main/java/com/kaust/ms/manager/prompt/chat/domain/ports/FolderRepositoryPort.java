@@ -55,4 +55,13 @@ public interface FolderRepositoryPort {
     Mono<FolderResponse> update(FolderDocument folderDocument,
                                 FolderRequest folderRequest);
 
+
+    /**
+     * Delete a folder.
+     *
+     * @param folderDocument {@link FolderDocument}
+     * @return {@link FolderResponse}
+     */
+    Mono<Void> delete(final FolderDocument folderDocument);
+
 }
