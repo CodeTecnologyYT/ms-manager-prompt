@@ -44,8 +44,7 @@ public class ReactiveRagChatAdapter implements ReactiveRagChatPort {
      */
     private static String prompt(final String context) {
         return """
-                the response must be of same the context not agree text additional,
-                add lines break of finish response
+                Format the following context text for better readability. Return ONLY the formatted text. Do not add any introductory or concluding remarks.
                 Context: %s""".formatted(context);
     }
 
