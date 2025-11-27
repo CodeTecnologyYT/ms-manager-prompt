@@ -63,9 +63,6 @@ dependencies {
     // Libraries documentation
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'
 
-    // Library of logging cloud
-    implementation 'com.google.cloud:google-cloud-logging-logback:0.132.18-alpha'
-
     // Library of mapping and constructor automatic
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'

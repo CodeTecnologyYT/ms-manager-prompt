@@ -1,26 +1,42 @@
-# ===== Stage 1: Build =====
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# ================================
+# ===== Stage 1: BUILD APP =======
+# ================================
+FROM eclipse-temurin:17-jdk AS build
+
+# Directorio donde se trabajará
 WORKDIR /app
 
-# Copiar pom y descargar dependencias (cache)
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# --- Copiar solo los archivos de Gradle ---
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle .
+COPY settings.gradle .
 
-# Copiar el código
+# --- Permisos para el wrapper ---
+RUN chmod +x gradlew
+
+# --- Descargar dependencias (CACHE) ---
+RUN ./gradlew dependencies --no-daemon
+
+# --- Copiar el código fuente por separado ---
 COPY src ./src
 
-# Empaquetar el JAR
-RUN mvn -DskipTests package
+# --- Compilar el proyecto y generar el JAR ---
+RUN ./gradlew bootJar --no-daemon
 
-# ===== Stage 2: Runtime =====
-FROM eclipse-temurin:17-jdk-alpine
+
+# ================================
+# ===== Stage 2: RUNTIME =========
+# ================================
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-# Copiar solo el JAR final desde el build
-COPY --from=build /app/target/*.jar app.jar
+# --- Copiar SOLO el JAR ya construido ---
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Puerto que expone tu app (si usas Spring Boot es 8080)
+# Puerto expuesto (Spring Boot usual)
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+# Comando de ejecución
+ENTRYPOINT ["java", "-jar", "app.jar"]
