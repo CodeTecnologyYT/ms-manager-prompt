@@ -45,6 +45,10 @@ public class FolderController {
      * updateChatUseCase.
      */
     private final IUpdateChatUseCase updateChatUseCase;
+    /**
+     * deleteFolderUseCase.
+     */
+    private final IDeleteFolderUseCase deleteFolderUseCase;
 
     /**
      * Create a folder.
@@ -144,6 +148,26 @@ public class FolderController {
                                                  @PathVariable("idFolder") String idFolder,
                                                  @PathVariable("idChat") String idChat) {
         return updateChatUseCase.handle(userData.getUid(), idFolder, idChat);
+    }
+
+
+    /**
+     * Link a folder with chat.
+     *
+     * @param userData {@link UserData}
+     * @param idFolder {@link String}
+     * @param idChat   {@link String}
+     * @return {@link ChatResponse}
+     */
+    @DeleteMapping("/{idFolder}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Link a folder with chat", description = "Link a folder with chat.")
+    @ApiResponse(responseCode = "200", description = "Success link a folder with chat.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<Void> deleteFolder(@CurrentUser UserData userData,
+                                                 @PathVariable("idFolder") String idFolder) {
+        return deleteFolderUseCase.handle(userData.getUid(), idFolder);
     }
 
 }
