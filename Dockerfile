@@ -53,11 +53,18 @@ RUN apt-get update && apt-get install -y \
     libasound2t64 \
     && rm -rf /var/lib/apt/lists/*
 
+# Creamos una carpeta temporal para instalar los navegadores
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/pw-browsers
+RUN mkdir -p $PLAYWRIGHT_BROWSERS_PATH
+
 # --- Copiar SOLO el JAR ya construido ---
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Puerto expuesto (Spring Boot usual)
 EXPOSE 8080
 
+# Variables de entorno para Java y Playwright
+ENV JAVA_TOOL_OPTIONS="--add-opens=java.base/java.io=ALL-UNNAMED"
+
 # Comando de ejecución
-ENTRYPOINT ["java", "--add-opens=java.base/java.io=ALL-UNNAMED", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
