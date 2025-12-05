@@ -5,6 +5,7 @@ import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptError;
 import com.kaust.ms.manager.prompt.shared.exceptions.ManagerPromptException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +37,8 @@ public class JasperReportAdapter implements ReportPort {
                 final var reportStream = new ClassPathResource(reportPath).getInputStream();
 
                 // Crear el data source para JasperReports
-                final var jrDataSource = new JRBeanCollectionDataSource(dataSource);
+                final var jrDataSource = Objects.nonNull(dataSource) ?
+                        new JRBeanCollectionDataSource(dataSource) : new JREmptyDataSource();
 
                 // Llenar el reporte con los datos
                 final var jasperPrint = JasperFillManager.fillReport(reportStream, parameters, jrDataSource);

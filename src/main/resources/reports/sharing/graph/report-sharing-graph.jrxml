@@ -1,0 +1,41 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="report-sharing-graph" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7f07f0eb-23f9-4044-a814-eca6e61c0b97">
+	<parameter name="IMAGE_GRAPH" class="java.io.InputStream"/>
+	<query language="sql"><![CDATA[]]></query>
+	<background splitType="Stretch"/>
+	<title height="36" splitType="Stretch">
+		<element kind="staticText" uuid="172bfd38-9e7e-4e17-9ad2-342f8f0959d9" stretchType="ContainerHeight" x="160" y="6" width="260" height="19" fontName="Open Sans" fontSize="11.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Kaust Document]]></text>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+	</title>
+	<pageHeader height="65" splitType="Stretch">
+		<element kind="rectangle" uuid="d7a612f1-1431-4b37-bce6-a0898aeeb0c8" x="20" y="5" width="80" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="ff1ae96e-d977-499b-8af0-d85c4fdf7e6b" x="100" y="5" width="445" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="28c22bc1-aba6-44d9-8d0c-890c18fdacd1" x="20" y="35" width="80" height="30" forecolor="#0C0C0C"/>
+		<element kind="rectangle" uuid="9afccc8d-3373-42b2-b8fa-a84e7ed8bbe2" x="100" y="35" width="445" height="30" forecolor="#0C0C0C"/>
+		<element kind="staticText" uuid="c9bcd209-20f7-4244-9d59-e999b24b21a5" x="25" y="40" width="70" height="20" fontName="Open Sans" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Collaborator]]></text>
+		</element>
+		<element kind="staticText" uuid="1d70cba3-eb06-4d9d-9480-f864664fe8be" x="110" y="40" width="434" height="20" fontName="Open Sans" vTextAlign="Middle">
+			<text><![CDATA[Model Kaust Model]]></text>
+		</element>
+		<element kind="staticText" uuid="a617b247-daab-4aba-9587-91f868b8c158" x="25" y="10" width="70" height="20" fontName="Open Sans" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Title]]></text>
+		</element>
+		<element kind="staticText" uuid="ff560f61-df2b-4268-8a72-c66f5b6e0f25" x="110" y="10" width="434" height="20" fontName="Open Sans" vTextAlign="Middle">
+			<text><![CDATA[Document Graph Kaust ]]></text>
+		</element>
+	</pageHeader>
+	<columnHeader height="38" splitType="Stretch"/>
+	<detail>
+		<band height="500" splitType="Stretch">
+			<element kind="image" uuid="5f5223ad-0c22-4d65-ad32-6dcab9019f73" x="20" y="10" width="524" height="480" scaleImage="RetainShape" linkType="None" linkTarget="Self" hImageAlign="Center" vImageAlign="Middle">
+				<expression><![CDATA[$P{IMAGE_GRAPH}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>
