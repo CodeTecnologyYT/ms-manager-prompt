@@ -37,6 +37,10 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Library of work with html
+    implementation 'com.microsoft.playwright:playwright:1.56.0'
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.101.Final:osx-aarch_64'
+
     // Library of security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.google.firebase:firebase-admin:9.7.0'

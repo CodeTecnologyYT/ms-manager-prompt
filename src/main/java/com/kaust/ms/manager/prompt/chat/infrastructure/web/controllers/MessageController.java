@@ -14,9 +14,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.buffer.DefaultDataBuffer;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.nio.ByteBuffer;
 
 @RestController
 @RequestMapping("/messages")
@@ -40,6 +48,18 @@ public class MessageController {
      * iGenerateContextViewMDUseCase.
      */
     private final IGenerateContextViewMDUseCase iGenerateContextViewMDUseCase;
+    /**
+     * iGeneratePDFSharingGraph.
+     */
+    private final IGeneratePDFSharingGraph iGeneratePDFSharingGraph;
+    /**
+     * isendMailSharingGraphUseCase.
+     */
+    private final ISendMailSharingGraphUseCase isendMailSharingGraphUseCase;
+    /**
+     * FILENAME_GRAPH_SHARING_PDF.
+     */
+    private final static String FILENAME_GRAPH_SHARING_PDF = "sharing-graph";
 
     /**
      * Send email sharing chat.
@@ -63,6 +83,27 @@ public class MessageController {
     }
 
     /**
+     * Send email sharing graph.
+     *
+     * @param userData    {@link UserData}
+     * @param messageId   {@link String}
+     * @param mailRequest {@link MailRequest}
+     * @return mono{@link Void}
+     */
+    @PostMapping("/{messageId}/graph/sharing/email")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Send email sharing graph", description = "Send email sharing graph.")
+    @ApiResponse(responseCode = "204", description = "Success send email sharing graph.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<Void> sendEmailSharingGraph(@CurrentUser UserData userData,
+                                           @PathVariable("messageId") String messageId,
+                                           @Valid @RequestBody Mono<MailRequest> mailRequest) {
+        return mailRequest.flatMap(request -> iGeneratePDFSharingGraph.handle(messageId, userData.getUid()).
+                flatMap(bytes -> isendMailSharingGraphUseCase.handle(request.getTo(), userData.getUid(), messageId, bytes)));
+    }
+
+    /**
      * Generate Graph for a message.
      *
      * @param userData  {@link UserData}
@@ -78,6 +119,33 @@ public class MessageController {
     public Mono<GraphResponse> generateGraphMessage(@CurrentUser UserData userData,
                                                     @PathVariable("messageId") String messageId) {
         return iGenerateGraphEntitiesUseCase.handle(messageId, userData.getUid());
+    }
+
+    /**
+     * Generate Graph for a message.
+     *
+     * @param userData  {@link UserData}
+     * @param messageId {@link String}
+     * @return mono{@link DefaultDataBuffer}
+     */
+    @PostMapping("/{messageId}/graph/sharing/pdf")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Generate PFD Graph for message", description = "Generate PFD Graph for message.")
+    @ApiResponse(responseCode = "200", description = "Success generate pdf Graph for message.")
+    @ApiResponse(responseCode = "500", description = "Unexpected error.",
+            content = @Content(schema = @Schema(hidden = true)))
+    public Mono<ResponseEntity<Flux<DefaultDataBuffer>>> generatePdfGraphMessage(@CurrentUser UserData userData,
+                                                                                 @PathVariable("messageId") String messageId) {
+        return iGeneratePDFSharingGraph.handle(messageId, userData.getUid())
+                .map(pdfBytes -> {
+                    final var buffer = new DefaultDataBufferFactory().wrap(ByteBuffer.wrap(pdfBytes));
+
+                    return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION,
+                                    "attachment; filename=\"" + FILENAME_GRAPH_SHARING_PDF + ".pdf\"")
+                            .contentType(MediaType.APPLICATION_PDF)
+                            .body(Flux.just(buffer));
+                });
     }
 
     /**
