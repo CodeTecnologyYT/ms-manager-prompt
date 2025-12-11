@@ -4,7 +4,7 @@ steps:
     args:
       [
         "build",
-        "-t", "us-central1-docker.pkg.dev/dsb-development-446616/ms-manager-prompt/api-kaust:$COMMIT_SHA",
+        "-t", "europe-west1-docker.pkg.dev/dsb-development-446616/cloud-run-source-deploy/ms-manager-prompt/api-kaust:$COMMIT_SHA",
         "."
       ]
 
@@ -13,7 +13,7 @@ steps:
     args:
       [
         "push",
-        "us-central1-docker.pkg.dev/dsb-development-446616/ms-manager-prompt/api-kaust:$COMMIT_SHA"
+        "europe-west1-docker.pkg.dev/dsb-development-446616/cloud-run-source-deploy/ms-manager-prompt/api-kaust:$COMMIT_SHA"
       ]
 
   # 3) Deploy a Cloud Run
@@ -21,14 +21,14 @@ steps:
     args:
       [
         "run", "deploy", "SERVICE",
-        "--image", "us-central1-docker.pkg.dev/dsb-development-446616/ms-manager-prompt/api-kaust:$COMMIT_SHA",
+        "--image", "europe-west1-docker.pkg.dev/dsb-development-446616/cloud-run-source-deploy/ms-manager-prompt/api-kaust:$COMMIT_SHA",
         "--region", "europe-west1",
         "--platform", "managed",
         "--allow-unauthenticated"
       ]
 
 images:
-  - "us-central1-docker.pkg.dev/dsb-development-446616/ms-manager-prompt/api-kaust:$COMMIT_SHA"
+  - "europe-west1-docker.pkg.dev/dsb-development-446616/cloud-run-source-deploy/ms-manager-prompt/api-kaust:$COMMIT_SHA"
 
 options:
   logging: CLOUD_LOGGING_ONLY
